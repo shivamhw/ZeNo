@@ -1,2 +1,2 @@
-cd ZeNo
+#!bin/bash
 python3 . > log &
