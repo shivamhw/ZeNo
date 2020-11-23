@@ -1,4 +1,5 @@
 from modules import aviralscrapper as avi
+from modules import data
 from modules.data import User
 from dotenv import load_dotenv
 import os
@@ -23,14 +24,35 @@ def get_marks(message, user):
                           + '\n'
     bot.send_message(message.chat.id, output_string)
 
-
 def front_page(user, message):
     bot.send_message(message.chat.id, "Hiii "+avi.get_userdata(user)['first_name']+" ... ")
     # bot.send_message(message.chat.id, "Here are some things you can do")
     markup = InlineKeyboardMarkup()
     markup.row_width = 1
-    markup.add(InlineKeyboardButton("Aviral marks", callback_data="aviral"))
+    markup.add(InlineKeyboardButton("Aviral marks", callback_data="aviral"),
+                                    InlineKeyboardButton("New announcements", callback_data="announcement"))
     bot.send_message(message.chat.id, "Here are some things you can do", reply_markup=markup)
+
+def new_page(user, message):
+    markup = InlineKeyboardMarkup()
+    markup.row_width = 1
+    markup.add(InlineKeyboardButton("Aviral marks", callback_data="aviral"),
+                                    InlineKeyboardButton("New announcements", callback_data="announcement"),
+                                    InlineKeyboardButton("Refresh annocements", callback_data="refresh_anc"))
+    bot.send_message(message.chat.id, "Here are some things you can do", reply_markup=markup)
+
+def get_announcement(message, user):
+    anc = user.get_announcement()
+    output_string = "Announcement No: "+str(user.request_no)
+    output_string += "\n Date:-" + str(anc['date'])
+    output_string += "\n Title:-" + str(anc['title'])
+    output_string += "\n Content:-" + str(anc['content'])
+    #markup = InlineKeyboardMarkup()
+    #markup.row_width = 1
+    bot.send_message(message.chat.id, output_string)
+    # markup.add(InlineKeyboardButton(text = "Notification Link", url = str(anc['link'])))
+    new_page(user, message)
+
 
 def gen_markup_login():
     markup = InlineKeyboardMarkup()
@@ -51,6 +73,21 @@ def callback_query(call):
             get_marks(call.message, users_dict[call.message.chat.id])
         else:
             bot.send_message(call.message.chat.id ,"Please /start again")
+    elif call.data == "announcement":
+        bot.answer_callback_query(call.id)
+        if (call.message.chat.id in users_dict):
+            get_announcement(call.message, users_dict[call.message.chat.id])
+        else:
+            bot.send_message(call.message.chat.id, "Please /start again")
+    elif call.data == "refresh_anc":
+        bot.answer_callback_query(call.id)
+        user = users_dict[call.message.chat.id]
+        user.request_no = 0
+        if(call.message.chat.id in users_dict):
+            get_announcement(call.message, users_dict[call.message.chat.id])
+        else:
+            bot.send_message(call.message.chat.id, "Please /start again")
+
 def get_username(message):
     username = message.text
     user = User(username)
