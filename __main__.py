@@ -1,5 +1,6 @@
 from modules import aviralscrapper as avi
-from modules import data
+from modules.helper import Parser
+# from helper import Parser
 from modules.data import User
 from dotenv import load_dotenv
 import os
@@ -12,26 +13,15 @@ bot = telebot.TeleBot(os.environ.get("TELEGRAM_TOKEN")) or None
 users_dict = {}
 
 
-def get_marks(message, user):
-    marks_raw = avi.get_marks(user)
-    output_string = 'Results: \n\n'
-    output_string += "Name".ljust(60)  + "      C1" + "     C2" + "     C3\n\n"
-    for i in marks_raw:
-         output_string += str(i['name']).ljust(60) \
-                          + i['c1_marks']+'        '\
-                          + i['c2_marks']+"        "\
-                          + i['c3_marks']+"        "\
-                          + '\n'
-    bot.send_message(message.chat.id, output_string)
-
+#### Front page for loggedin User
 def front_page(user, message):
-    bot.send_message(message.chat.id, "Hiii "+avi.get_userdata(user)['first_name']+" ... ")
-    # bot.send_message(message.chat.id, "Here are some things you can do")
+    bot.send_message(message.chat.id, "Hiii "+user.name+" ... ")
     markup = InlineKeyboardMarkup()
     markup.row_width = 1
     markup.add(InlineKeyboardButton("Aviral marks", callback_data="aviral"),
                                     InlineKeyboardButton("New announcements", callback_data="announcement"))
     bot.send_message(message.chat.id, "Here are some things you can do", reply_markup=markup)
+
 
 def new_page(user, message):
     markup = InlineKeyboardMarkup()
@@ -54,13 +44,7 @@ def get_announcement(message, user):
     new_page(user, message)
 
 
-def gen_markup_login():
-    markup = InlineKeyboardMarkup()
-    markup.row_width = 1
-    markup.add(InlineKeyboardButton("Login Now", callback_data="main_login"),
-                               InlineKeyboardButton("No Thanks", callback_data="cancel"))
-    return markup
-
+# main button event handler
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
     if call.data == "main_login":
@@ -88,6 +72,18 @@ def callback_query(call):
         else:
             bot.send_message(call.message.chat.id, "Please /start again")
 
+
+#### Handler functions
+
+def get_marks(message, user):
+    marks = Parser.marks_parser(avi.get_marks(user))
+    bot.send_message(message.chat.id, marks)
+
+
+
+
+##Helper functions
+
 def get_username(message):
     username = message.text
     user = User(username)
@@ -105,6 +101,16 @@ def get_password(message):
     else:
         front_page(user, message)
 
+def gen_markup_login():
+    markup = InlineKeyboardMarkup()
+    markup.row_width = 1
+    markup.add(InlineKeyboardButton("Login Now", callback_data="main_login"),
+                               InlineKeyboardButton("No Thanks", callback_data="cancel"))
+    return markup
+
+
+
+### Handlers
 @bot.message_handler(commands=['start', 'help'])
 def message_handler(message):
     hello_msg = ("Hey, I am ZeNo. I was created to save your time so you can do your assignments with one hand!\n"
@@ -114,6 +120,8 @@ def message_handler(message):
         bot.send_message(message.chat.id, "you are registered with us!")
         front_page(users_dict[message.chat.id], message)
     else:
-        # bot.send_message(message.chat.id, "ohhh! you are not registered with us.\nWant to login??")
         bot.send_message(message.chat.id, "ohhh! you are not registered with us.\nWant to login??", reply_markup=gen_markup_login())
+
+
+#### BOT STARTING POINT
 bot.polling(none_stop=True)

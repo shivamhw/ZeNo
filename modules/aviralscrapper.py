@@ -33,6 +33,7 @@ def login(user):
 	user.jwt_token = json.loads(main_session.post(aviral_jwt_api_url, data=json.dumps(post_body_login)).text)['jwt_token']
 	user.cs_token = main_session.cookies.get_dict()['csrftoken']
 	user.cookie = main_session.cookies
+	user.name = get_userdata(user)['first_name']
 	return True
 
 def get_userdata(user):

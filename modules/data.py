@@ -17,8 +17,9 @@ class AnnouncementUpdate:
     update_id : int = 0
 
 class User:
-    def __init__(self, name):
-        self.username = name
+    def __init__(self, username):
+        self.name = None
+        self.username = username
         self.password = None
         self.jwt_token = None
         self.cookie = None
