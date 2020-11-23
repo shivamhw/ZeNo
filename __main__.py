@@ -24,6 +24,7 @@ def front_page(user, message):
     markup.add(InlineKeyboardButton("Aviral marks", callback_data="aviral"),
                                     InlineKeyboardButton("New announcements", callback_data="announcement"))
     if(user.is_admin):
+        bot.send_message(message.chat.id, "Awesome you are an admin!!!")
         markup.add(InlineKeyboardButton("Admin Panel", callback_data="admin_panel"))
     bot.send_message(message.chat.id, "Here are some things you can do", reply_markup=markup)
 
@@ -38,15 +39,13 @@ def new_page(user, message):
 
 def get_announcement(message, user):
     anc = user.get_announcement()
-    output_string = "Announcement No: "+str(user.request_no)
+    output_string = "Announcement No: "+str(user.request_no + '\n')
     output_string += "\n Date:-" + str(anc['date'])
     output_string += "\n Title:-" + str(anc['title'])
-    output_string += "\n Content:-" + str(anc['content'])
-    #markup = InlineKeyboardMarkup()
-    #markup.row_width = 1
-    bot.send_message(message.chat.id, output_string)
-    # markup.add(InlineKeyboardButton(text = "Notification Link", url = str(anc['link'])))
-    new_page(user, message)
+    markup = InlineKeyboardMarkup()
+    markup.row_width = 2
+    markup.add(InlineKeyboardButton(text="Notification Link", url=str(anc['link'])), InlineKeyboardButton(text="Next ->", callback_data="announcement"))
+    bot.send_message(message.chat.id, output_string, reply_markup=markup)
 
 
 # main button event handler
@@ -90,7 +89,7 @@ def get_marks(message, user):
 ##Helper functions
 
 def trial_setup(user):
-    admins = ['mit2020122']
+    admins = ['mit2020122', 'mit2020080']
     if(user.username in admins):
         user.is_admin = True
 
@@ -122,7 +121,7 @@ def gen_markup_login():
 
 
 ### Handlers
-@bot.message_handler(commands=['start', 'help'])
+@bot.message_handler(commands=['start'])
 def message_handler(message):
     hello_msg = ("Hey, I am ZeNo. I was created to save your time so you can do your assignments with one hand!\n"
 				 "Please wait while i check your status.....")
@@ -133,6 +132,12 @@ def message_handler(message):
     else:
         bot.send_message(message.chat.id, "ohhh! you are not registered with us.\nWant to login??", reply_markup=gen_markup_login())
 
+@bot.message_handler(commands=['hi'])
+def message_handler(message):
+    if(message.chat.id in users_dict):
+        front_page(users_dict[message.chat.id], message)
+    else:
+        bot.send_message(message.chat.id, "ohhh! you are not registered with us.\nWant to login??", reply_markup=gen_markup_login())
 
 #### BOT STARTING POINT
 bot.polling(none_stop=True)
