@@ -29,17 +29,17 @@ def front_page(user, message):
     bot.send_message(message.chat.id, "Here are some things you can do", reply_markup=markup)
 
 
-def new_page(user, message):
-    markup = InlineKeyboardMarkup()
-    markup.row_width = 1
-    markup.add(InlineKeyboardButton("Aviral marks", callback_data="aviral"),
-                                    InlineKeyboardButton("New announcements", callback_data="announcement"),
-                                    InlineKeyboardButton("Refresh annocements", callback_data="refresh_anc"))
-    bot.send_message(message.chat.id, "Here are some things you can do", reply_markup=markup)
+# def new_page(user, message):
+#     markup = InlineKeyboardMarkup()
+#     markup.row_width = 1
+#     markup.add(InlineKeyboardButton("Aviral marks", callback_data="aviral"),
+#                                     InlineKeyboardButton("New announcements", callback_data="announcement"),
+#                                     InlineKeyboardButton("Refresh announcements", callback_data="refresh_anc"))
+#     bot.send_message(message.chat.id, "Here are some things you can do", reply_markup=markup)
 
 def get_announcement(message, user):
     anc = user.get_announcement()
-    output_string = "Announcement No: "+str(user.request_no + '\n')
+    output_string = "Announcement No: "+str(user.request_no) + '\n'
     output_string += "\n Date:-" + str(anc['date'])
     output_string += "\n Title:-" + str(anc['title'])
     markup = InlineKeyboardMarkup()
