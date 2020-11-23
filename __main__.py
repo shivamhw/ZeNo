@@ -1,5 +1,6 @@
 from modules import aviralscrapper as avi
 from modules.helper import Parser
+from modules import classlinks
 # from helper import Parser
 from modules.data import User
 from dotenv import load_dotenv
@@ -23,6 +24,7 @@ def front_page(user, message):
     markup.row_width = 1
     markup.add(InlineKeyboardButton("Aviral marks", callback_data="aviral"),
                                     InlineKeyboardButton("New announcements", callback_data="announcement"))
+    markup.add(InlineKeyboardButton("Online Class links", callback_data="classlinks"))
     if(user.is_admin):
         bot.send_message(message.chat.id, "Awesome you are an admin!!!")
         markup.add(InlineKeyboardButton("Admin Panel", callback_data="admin_panel"))
@@ -75,6 +77,14 @@ def callback_query(call):
             get_announcement(call.message, users_dict[call.message.chat.id])
         else:
             bot.send_message(call.message.chat.id, "Please /start again")
+    elif call.data == "classlinks":
+        bot.answer_callback_query(call.id)
+        user = users_dict[call.message.chat.id]
+        user.request_no = 0
+        if(call.message.chat.id in users_dict):
+            get_classlinks(call.message, users_dict[call.message.chat.id])
+        else:
+            bot.send_message(call.message.chat.id, "Please /start again")
 
 
 #### Handler functions
@@ -83,7 +93,13 @@ def get_marks(message, user):
     marks = Parser.marks_parser(avi.get_marks(user))
     bot.send_message(message.chat.id, marks)
 
-
+def get_classlinks(message, user):
+    raw = classlinks.get_links(user)
+    for i,j in raw.items():
+        markup = InlineKeyboardMarkup()
+        markup.row_width = len(j)
+        markup.add(InlineKeyboardButton("Link", url=j[0]))
+        bot.send_message(message.chat.id, i , reply_markup=markup)
 
 
 ##Helper functions
