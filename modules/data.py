@@ -25,6 +25,7 @@ class User:
         self.cookie = None
         self.cs_token = None
         self.request_no = 0
+        self.is_admin = False
 
     def get_announcement(self) -> dict:
         if self.request_no == 5:

@@ -13,6 +13,9 @@ bot = telebot.TeleBot(os.environ.get("TELEGRAM_TOKEN")) or None
 users_dict = {}
 
 
+
+
+
 #### Front page for loggedin User
 def front_page(user, message):
     bot.send_message(message.chat.id, "Hiii "+user.name+" ... ")
@@ -20,6 +23,8 @@ def front_page(user, message):
     markup.row_width = 1
     markup.add(InlineKeyboardButton("Aviral marks", callback_data="aviral"),
                                     InlineKeyboardButton("New announcements", callback_data="announcement"))
+    if(user.is_admin):
+        markup.add(InlineKeyboardButton("Admin Panel", callback_data="admin_panel"))
     bot.send_message(message.chat.id, "Here are some things you can do", reply_markup=markup)
 
 
@@ -84,6 +89,11 @@ def get_marks(message, user):
 
 ##Helper functions
 
+def trial_setup(user):
+    admins = ['mit2020122']
+    if(user.username in admins):
+        user.is_admin = True
+
 def get_username(message):
     username = message.text
     user = User(username)
@@ -99,6 +109,7 @@ def get_password(message):
         bot.send_message(message.chat.id, "sahi dal le waps se.... Waps start kro /start")
         del users_dict[message.chat.id]
     else:
+        trial_setup(user)
         front_page(user, message)
 
 def gen_markup_login():
