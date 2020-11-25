@@ -1,8 +1,9 @@
 from modules import aviralscrapper as avi
 from modules.helper import Parser
-from modules import classlinks
+from modules import classlinks, admin
 # from helper import Parser
 from modules.data import User
+from modules import dbhelper
 from dotenv import load_dotenv
 import os
 import telebot
@@ -30,6 +31,13 @@ def front_page(user, message):
         markup.add(InlineKeyboardButton("Admin Panel", callback_data="admin_panel"))
     bot.send_message(message.chat.id, "Here are some things you can do", reply_markup=markup)
 
+### admin panel
+def admin_panel(user, message):
+    bot.send_message(message.chat.id, "Admins have superpowers!!! Use it wisely.")
+    markup = InlineKeyboardMarkup()
+    for i, j in admin.get_modules().items():
+        markup.add(InlineKeyboardButton(j, callback_data=i))
+    bot.send_message(message.chat.id, "Here are some things only admin can do", reply_markup=markup)
 
 # def new_page(user, message):
 #     markup = InlineKeyboardMarkup()
@@ -85,6 +93,18 @@ def callback_query(call):
             get_classlinks(call.message, users_dict[call.message.chat.id])
         else:
             bot.send_message(call.message.chat.id, "Please /start again")
+    elif call.data == "admin_panel":
+        bot.answer_callback_query(call.id)
+        user = users_dict[call.message.chat.id]
+        admin_panel(user, call.message)
+    elif call.data in admin.get_modules():
+        if(call.message.chat.id in users_dict):
+            admin.handle(bot, users_dict, call.message, call.data)
+        else:
+            bot.send_message(call.message.chat.id, "Please /start again")
+    elif call.data == "sure_a":
+        bot.answer_callback_query(call.id)
+        admin.broadcast(bot, users_dict)
 
 
 #### Handler functions
@@ -103,6 +123,7 @@ def get_classlinks(message, user):
 
 
 ##Helper functions
+
 
 def trial_setup(user):
     admins = ['mit2020122', 'mit2020080']
@@ -134,7 +155,19 @@ def gen_markup_login():
                                InlineKeyboardButton("No Thanks", callback_data="cancel"))
     return markup
 
-
+def is_reg(message):
+    if(message.chat.id in users_dict):
+        return True
+    # if(dbhelper.is_registered(message.chat.id)):  ## to be done by nikhil
+    #     username, password = dbhelper.get_session(message.chat.id)
+    #     user = User(username)
+    #     user.password = password
+    #     if(avi.login(user)):
+    #         bot.send_message(message.chat.id, "from db")
+    #         return True
+    #     else:
+    #         bot.send_message(message.chat.id, "error from db side please /start again")
+    return False
 
 ### Handlers
 @bot.message_handler(commands=['start'])
@@ -142,7 +175,7 @@ def message_handler(message):
     hello_msg = ("Hey, I am ZeNo. I was created to save your time so you can do your assignments with one hand!\n"
 				 "Please wait while i check your status.....")
     bot.send_message(message.chat.id, hello_msg)
-    if(message.chat.id in users_dict):
+    if(is_reg(message)):
         bot.send_message(message.chat.id, "you are registered with us!")
         front_page(users_dict[message.chat.id], message)
     else:
@@ -150,7 +183,7 @@ def message_handler(message):
 
 @bot.message_handler(commands=['hi'])
 def message_handler(message):
-    if(message.chat.id in users_dict):
+    if(is_reg(message)):
         front_page(users_dict[message.chat.id], message)
     else:
         bot.send_message(message.chat.id, "ohhh! you are not registered with us.\nWant to login??", reply_markup=gen_markup_login())

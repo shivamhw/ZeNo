@@ -1,6 +1,6 @@
 import requests
 import json
-
+from modules import dbhelper
 
 # API for requests
 aviral_login_url = "https://aviral.iiita.ac.in/login"
@@ -30,10 +30,15 @@ def login(user):
 	res = main_session.post(aviral_jwt_api_url, data=json.dumps(post_body_login))
 	if(res.text == '{"user_group": null}'):
 		return False
+
 	user.jwt_token = json.loads(main_session.post(aviral_jwt_api_url, data=json.dumps(post_body_login)).text)['jwt_token']
 	user.cs_token = main_session.cookies.get_dict()['csrftoken']
 	user.cookie = main_session.cookies
-	user.name = get_userdata(user)['first_name']
+	userData = get_userdata(user)
+	user.name = userData['first_name']
+	# user.is_admin = dbhelper.isadmin(user.username) # to be done by nikhil
+	marks = get_marks(user)
+	#dbhelper.register_user(userData, marks)  # just for db to be done by nikhil
 	return True
 
 def get_userdata(user):
