@@ -16,6 +16,7 @@ def get_modules():
     return amodules
 
 def get_msg(message):
+    global  broadcast_msg
     broadcast_msg = message.text
     bot.reply_to(message, "Preview of message:")
     bot.send_message(message.chat.id, broadcast_msg)

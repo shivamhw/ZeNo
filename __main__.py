@@ -98,6 +98,7 @@ def callback_query(call):
         user = users_dict[call.message.chat.id]
         admin_panel(user, call.message)
     elif call.data in admin.get_modules():
+        bot.answer_callback_query(call.id)
         if(call.message.chat.id in users_dict):
             admin.handle(bot, users_dict, call.message, call.data)
         else:
