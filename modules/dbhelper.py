@@ -4,7 +4,8 @@ import logging
 #Logger parameters
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-file_handler = logging.FileHandler('database.log')
+file_handler = logging.FileHandler('/home/ubuntu/Logs/database.log')
+
 formatter = logging.Formatter('%(levelname)s:%(name)s:%(funcName)s:%(message)s')
 file_handler.setFormatter(formatter)
 
@@ -17,7 +18,7 @@ class Dbhelper:
     def __init__(self):
         try:
             logger.info("Establishing Connection to DB")
-            self.conn = sqlite3.connect('students.db')
+            self.conn = sqlite3.connect('/home/ubuntu/Database/students.db')
         except Exception as e:
             logger.error(e)
         else:
@@ -231,3 +232,41 @@ class Dbhelper:
             return True                
         else:
             return False
+
+    def update_admin(self,enroll,status):
+        c = self.conn.cursor()
+        if(self.__isRecordExist(enroll,"users")):
+            update_query = "UPDATE USERS SET STATUS = \"" + status + "\" WHERE enroll = \"" + enroll + "\""
+            c.execute(update_query)
+            self.conn.commit()
+            c.close()
+            return True
+
+        return False
+
+    def is_admin(self,enroll):
+        c = self.conn.cursor()
+        if(self.__isRecordExist(enroll,"users")):
+            select_query = "SELECT STATUS FROM USERS WHERE enroll = \"" + enroll + "\""
+            c.execute(select_query)
+            result = c.fetchall()
+            if(result[0][0] == 'Y'):
+                return True
+
+        return False   
+    
+    def set_notes(self,subject_code,note):
+        c = self.conn.cursor()
+        insert_list = [(subject_code),(note)]
+        insert_query = "INSERT INTO NOTES (subject_code,note) VALUES (?,?)"
+        c.execute(insert_query,insert_list)
+        c.close()
+        self.conn.commit()
+    
+    def get_notes(self,subject_code):
+        c = self.conn.cursor()
+        select_query = "SELECT NOTE from NOTES WHERE SUBJECT_CODE = \"" + subject_code + "\""
+        c.execute(select_query)
+        result = c.fetchall()
+        return result
+
