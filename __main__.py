@@ -159,15 +159,16 @@ def gen_markup_login():
 def is_reg(message):
     if(message.chat.id in users_dict):
         return True
-    # if(dbhelper.is_registered(message.chat.id)):  ## to be done by nikhil
-    #     username, password = dbhelper.get_session(message.chat.id)
-    #     user = User(username)
-    #     user.password = password
-    #     if(avi.login(user)):
-    #         bot.send_message(message.chat.id, "from db")
-    #         return True
-    #     else:
-    #         bot.send_message(message.chat.id, "error from db side please /start again")
+    db = Dbhelper()
+    if(db.is_registered(message.chat.id)):  ## to be done by nikhil
+    username, password = db.get_session(message.chat.id)
+    user = User(username)
+    user.password = password
+    if(avi.login(user)):
+    bot.send_message(message.chat.id, "from db")
+         return True
+    else:
+         bot.send_message(message.chat.id, "error from db side please /start again")
     return False
 
 ### Handlers
