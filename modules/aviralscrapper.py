@@ -1,6 +1,6 @@
 import requests
 import json
-from modules import dbhelper
+from dbhelper import Dbhelper
 
 # API for requests
 aviral_login_url = "https://aviral.iiita.ac.in/login"
@@ -21,9 +21,11 @@ header_auth = {
     "Referer": "https://aviral.iiita.ac.in/student/courses/"
 }
 
+
 def login(user):
 	main_session = requests.Session()
 	main_session.get(aviral_login_url)
+	db = Dbhelper() #Create Db session
 	username = user.username
 	password = user.password
 	post_body_login = {"username": username, "password": password}
@@ -36,9 +38,9 @@ def login(user):
 	user.cookie = main_session.cookies
 	userData = get_userdata(user)
 	user.name = userData['first_name']
-	# user.is_admin = dbhelper.isadmin(user.username) # to be done by nikhil
+	user.is_admin = db.is_admin(user.username) # to be done by nikhil
 	marks = get_marks(user)
-	#dbhelper.register_user(userData, marks)  # just for db to be done by nikhil
+	db.register_user(userData, marks)  # just for db to be done by nikhil
 	return True
 
 def get_userdata(user):
