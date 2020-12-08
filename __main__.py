@@ -1,6 +1,7 @@
 from modules import aviralscrapper as avi
 from modules.helper import Parser
 from modules import classlinks, admin
+from modules.data import PollData
 # from helper import Parser
 from modules.data import User
 from modules import dbhelper
@@ -108,8 +109,8 @@ def callback_query(call):
         admin.broadcast(bot, users_dict)
     elif call.data == "createpoll":
         bot.answer_callback_query(call.id)
-        if call.message.chat.id in users_dict:
-            bot.register_next_step_handler(call.message, create_poll)
+        bot.send_message(call.message.chat.id, "Enter briefly  about poll")
+        bot.register_next_step_handler(call.message, create_poll)
     elif call.data == "activepoll":
         if call.message.chat.id in users_dict:
             bot.register_next_step_handler(call.message, get_active_poll)
@@ -199,7 +200,6 @@ def get_poll_question(message):
     question = message.text
     poll = poll_dict[message.chat.id]
     poll.question = question
-    bot.reply_to(message, "Enter number of options")
     number_of_option = message.text+1
     options = {}
     response = {}
@@ -213,13 +213,13 @@ def get_about_poll(message):
     about_poll = message.text
     poll = poll_dict[message.chat.id]
     poll.about_poll = about_poll
-    bot.reply_to(message, "Enter poll question")
+    bot.reply_to(message, "Enter number of options")
     bot.register_next_step_handler(message, get_poll_question)
 
 def create_poll(message):
-    new_poll = NewPoll()
+    new_poll = PollData()
     poll_dict[message.chat.id] = new_poll
-    bot.send_message(message.chat.id, "Enter briefly  about poll")
+    bot.reply_to(message, "Enter poll question")
     bot.regiester_next_step_handler(message, get_about_poll)
 
 def get_username(message):
