@@ -3,4 +3,4 @@ beautifulsoup4==4.9.3
 dataclasses==0.8
 pyTelegramBotAPI==3.7.4
 python-dotenv==0.15.0
-ZeNo==0.0.1
+
