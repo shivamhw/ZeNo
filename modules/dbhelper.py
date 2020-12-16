@@ -1,5 +1,13 @@
 import sqlite3
-from ZeNo import logger
+import logging
+
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+file_handler = logging.FileHandler('database.log')
+formatter = logging.Formatter('%(levelname)s:%(name)s:%(funcName)s:%(message)s')
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
 
 
 class Dbhelper:

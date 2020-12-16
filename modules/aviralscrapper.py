@@ -27,6 +27,7 @@ header_auth = {
 def callback_query(call):
     bot.answer_callback_query(call.id)
     if call.message.chat.id in users_dict:
+
         get_marks(call.message, users_dict[call.message.chat.id])
     else:
         bot.send_message(call.message.chat.id, "Please /start again")
@@ -47,6 +48,8 @@ def login(user):
     user.cookie = main_session.cookies
     user_data = get_userdata(user)
     user.name = user_data['first_name']
+    user.admission_year = user_data['admission_year']
+    user.program = user_data['program']
     return True
 
 
@@ -63,6 +66,14 @@ def get_marks(message, user):
     header_auth['X-CSRFToken'] = user.cs_token
     user_marks = requests.get(aviral_marks_api, headers=header_auth)
     god_draft = json.loads(user_marks.text)
+    for i in god_draft:
+        print(f"Your marks in {i['name']} is {i['c1_marks']}")
+        if(i['name'] not in user.enrolled_courses):
+            print("firsst")
+            user.enrolled_courses.append(i['name'])
+    print(user.enrolled_courses)
+    marks = Parser.marks_parser(god_draft)
+    bot.send_message(message.chat.id, marks)
     try:
         userdata = get_userdata(user)
         DB.register_user(userdata, god_draft)

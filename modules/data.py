@@ -39,6 +39,9 @@ class User:
         self.cs_token = None
         self.request_no = 0
         self.is_admin = False
+        self.admission_year = None
+        self.program = None
+        self.enrolled_courses = []
         self.current_poll = None
         self.answered_poll = None  # stores the object of all polls answered by user
 

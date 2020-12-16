@@ -1,9 +1,8 @@
-from ZeNo import bot, users_dict, poll_dict, get_started
+from modules import admin, classlinks
+from ZeNo import bot, users_dict, poll_dict
 from modules.login import front_page
 from modules.data import PollData
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
-
-
 
 
 # main button event handler
@@ -144,6 +143,5 @@ def message_handler(message):
 
 
 #### BOT STARTING POINT
-get_started()
 bot.polling(none_stop=True)
 

@@ -3,7 +3,6 @@ from ZeNo import users_dict, bot
 from modules.data import User
 from modules import aviralscrapper as avi
 
-
 @bot.callback_query_handler(func=lambda call: call.data == "main_login")
 def login_callback(call):
     if call.message.chat.id not in users_dict:
