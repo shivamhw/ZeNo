@@ -1,4 +1,7 @@
 from typing import Any
+from ZeNo import bot, users_dict
+from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
+
 from modules import data
 from bs4 import BeautifulSoup
 import requests
@@ -8,6 +11,25 @@ import re
 
 # url for announcement
 url = "https://www.iiita.ac.in/announcements.php?page=1"
+
+
+@bot.callback_query_handler(func=lambda call: call.data in ["announcement", "refresh_anc"])
+def announce_callback_handler(call):
+    if call.data == "announcement":
+        bot.answer_callback_query(call.id)
+        if call.message.chat.id in users_dict:
+            get_announcement(call.message, users_dict[call.message.chat.id])
+        else:
+            bot.send_message(call.message.chat.id, "Please /start again")
+    elif call.data == "refresh_anc":
+        bot.answer_callback_query(call.id)
+        user = users_dict[call.message.chat.id]
+        user.request_no = 0
+        if call.message.chat.id in users_dict:
+            get_announcement(call.message, users_dict[call.message.chat.id])
+        else:
+            bot.send_message(call.message.chat.id, "Please /start again")
+
 
 def solve_date(extracted_date: Any) -> str:
     return re.sub(r'(\d)(st|nd|rd|th)', r'\1', extracted_date)
@@ -24,9 +46,9 @@ class AnnouncementParser:
 
     # Instance method
     def get_link(self) -> str:
-        url = self.current_announcement.findAll("div", {"class": "span8 announcementTitle"})[0].\
+        url_1 = self.current_announcement.findAll("div", {"class": "span8 announcementTitle"})[0].\
             findAll('a')[0].get('href')
-        parsed_url = urlparse(url, 'http')
+        parsed_url = urlparse(url_1, 'http')
         if parsed_url.netloc == '':
             return ('https://www.iiita.ac.in' + parsed_url.path).replace(" ", "/ ")
         else:
@@ -57,3 +79,14 @@ def update():
     data.AnnouncementUpdate.sorted_id = [i[1] for i in list(sorted(date_id_pair.items(), key=lambda t: t[1],
                                                                    reverse=True))]
 
+
+def get_announcement(message, user):
+    anc = user.get_announcement()
+    output_string = "Announcement No: "+str(user.request_no) + '\n'
+    output_string += "\n Date:-" + str(anc['date'])
+    output_string += "\n Title:-" + str(anc['title'])
+    markup = InlineKeyboardMarkup()
+    markup.row_width = 2
+    markup.add(InlineKeyboardButton(text="Notification Link", url=str(anc['link'])),
+               InlineKeyboardButton(text="Next ->", callback_data="announcement"))
+    bot.send_message(message.chat.id, output_string, reply_markup=markup)

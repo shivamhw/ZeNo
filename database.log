@@ -1,0 +1,19 @@
+INFO:modules.dbhelper:__init__:Establishing Connection to DB
+INFO:modules.dbhelper:__init__:DB Connection Established
+INFO:modules.dbhelper:__init__:Establishing Connection to DB
+INFO:modules.dbhelper:__init__:DB Connection Established
+INFO:modules.dbhelper:__init__:Establishing Connection to DB
+INFO:modules.dbhelper:__init__:DB Connection Established
+INFO:modules.dbhelper:__init__:Establishing Connection to DB
+INFO:modules.dbhelper:__init__:DB Connection Established
+INFO:modules.dbhelper:__init__:Establishing Connection to DB
+INFO:modules.dbhelper:__init__:DB Connection Established
+INFO:modules.dbhelper:__updateTotal:INSERT INTO MTechITFirst_total Values (?,?)
+INFO:modules.dbhelper:__init__:Establishing Connection to DB
+INFO:modules.dbhelper:__init__:DB Connection Established
+INFO:modules.dbhelper:__init__:Establishing Connection to DB
+INFO:modules.dbhelper:__init__:DB Connection Established
+INFO:modules.dbhelper:__init__:Establishing Connection to DB
+INFO:modules.dbhelper:__init__:DB Connection Established
+INFO:modules.dbhelper:__init__:Establishing Connection to DB
+INFO:modules.dbhelper:__init__:DB Connection Established

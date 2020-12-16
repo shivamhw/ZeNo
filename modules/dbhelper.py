@@ -1,15 +1,5 @@
 import sqlite3
-import logging
-
-#Logger parameters
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-file_handler = logging.FileHandler('database.log')
-formatter = logging.Formatter('%(levelname)s:%(name)s:%(funcName)s:%(message)s')
-file_handler.setFormatter(formatter)
-
-logger.addHandler(file_handler)
-
+from ZeNo import logger
 
 
 class Dbhelper:
@@ -17,7 +7,7 @@ class Dbhelper:
     def __init__(self):
         try:
             logger.info("Establishing Connection to DB")
-            self.conn = sqlite3.connect('students.db')
+            self.conn = sqlite3.connect('/home/shivamhw/iiit/PPR_Projects/students.db', check_same_thread=False)
         except Exception as e:
             logger.error(e)
         else:

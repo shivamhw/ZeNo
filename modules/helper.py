@@ -8,4 +8,3 @@ class Parser:
                             + i['c2_marks'] + ' | ' \
                             + i['c3_marks'] + '\n\n'
         return output_string
-

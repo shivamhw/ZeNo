@@ -1,6 +1,7 @@
 import requests
 import json
-from modules import dbhelper
+from ZeNo import bot, users_dict
+from modules.helper import Parser
 
 # API for requests
 aviral_login_url = "https://aviral.iiita.ac.in/login"
@@ -18,8 +19,18 @@ header_auth = {
 	"Authorization": '',
 	"session": "JUL-20",
 	"X-CSRFToken": '',
-    "Referer": "https://aviral.iiita.ac.in/student/courses/"
+	"Referer": "https://aviral.iiita.ac.in/student/courses/"
 }
+
+
+@bot.callback_query_handler(func=lambda call: call.data == "aviral")
+def callback_query(call):
+	bot.answer_callback_query(call.id)
+	if call.message.chat.id in users_dict:
+		get_marks(call.message, users_dict[call.message.chat.id])
+	else:
+		bot.send_message(call.message.chat.id, "Please /start again")
+
 
 def login(user):
 	main_session = requests.Session()
@@ -28,18 +39,15 @@ def login(user):
 	password = user.password
 	post_body_login = {"username": username, "password": password}
 	res = main_session.post(aviral_jwt_api_url, data=json.dumps(post_body_login))
-	if(res.text == '{"user_group": null}'):
+	if res.text == '{"user_group": null}':
 		return False
-
 	user.jwt_token = json.loads(main_session.post(aviral_jwt_api_url, data=json.dumps(post_body_login)).text)['jwt_token']
 	user.cs_token = main_session.cookies.get_dict()['csrftoken']
 	user.cookie = main_session.cookies
-	userData = get_userdata(user)
-	user.name = userData['first_name']
-	# user.is_admin = dbhelper.isadmin(user.username) # to be done by nikhil
-	marks = get_marks(user)
-	#dbhelper.register_user(userData, marks)  # just for db to be done by nikhil
+	user_data = get_userdata(user)
+	user.name = user_data['first_name']
 	return True
+
 
 def get_userdata(user):
 	header_auth['Authorization'] = user.jwt_token
@@ -48,11 +56,15 @@ def get_userdata(user):
 	print(f"Hello {user_data['first_name']}")
 	return user_data
 
-def get_marks(user):
+
+def get_marks(message, user):
 	header_auth['Authorization'] = user.jwt_token
 	header_auth['X-CSRFToken'] = user.cs_token
 	user_marks = requests.get(aviral_marks_api, headers=header_auth)
 	god_draft = json.loads(user_marks.text)
+	# DB.register_user(get_userdata(user), god_draft)
 	for i in god_draft:
 		print(f"Your marks in {i['name']} is {i['c1_marks']}")
+	marks = Parser.marks_parser(god_draft)
+	bot.send_message(message.chat.id, marks)
 	return god_draft

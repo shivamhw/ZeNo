@@ -1,2 +1,5 @@
 #!/bin/bash
-python3 . > log &
+
+export PYTHONPATH="${PYTHONPATH}:`pwd`"
+cd ..
+python3 -m ZeNo > log &
