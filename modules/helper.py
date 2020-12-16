@@ -8,3 +8,8 @@ class Parser:
                             + i['c2_marks'] + ' | ' \
                             + i['c3_marks'] + '\n\n'
         return output_string
+
+    def percentile(marks_analytics):
+        total_students = marks_analytics[0] + marks_analytics[1] + marks_analytics[2]
+        percentile = (marks_analytics[0]+marks_analytics[2])/total_students*100
+        return percentile
