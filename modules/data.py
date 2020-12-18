@@ -21,12 +21,15 @@ class AnnouncementUpdate:
 class PollData:
     def __init__(self):
         self.id = 0
-        self.active_polls = None
+        self.active_poll = None
         self.active_poll_count = None
-        self.question = None  # poll question corresponding to each poll id
-        self.options = None
+        self.question = None   # poll question corresponding to each poll id
+        self.options  = None
+        self.current_option_no = None
+        self.no_of_options = None
         self.response = None
-        self.about_poll = None  # stores the data why this poll is conducted
+        self.about_poll = None      # stores the data why this poll is conducted
+        self.total_response = 0
 
 
 class User:
