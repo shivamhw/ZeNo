@@ -20,7 +20,7 @@ def show_poll(call):
 
 
 
-@bot.callback_query_handler(func=lambda call: "active_poll" in call.data)
+@bot.callback_query_handler(func=lambda call: "Active Poll" in call.data)
 def active_poll_handler(call):
     user = users_dict[call.message.chat.id]
     active_poll = user.active_poll
@@ -28,7 +28,7 @@ def active_poll_handler(call):
     display_poll(call.message)
 
 
-@bot.callback_query_handler(func=lambda call: "option" in call.data)
+@bot.callback_query_handler(func=lambda call: "Option" in call.data)
 def options_handler(call):
     user = users_dict[call.message.chat.id]
     current_poll = user.current_poll
@@ -50,7 +50,7 @@ def get_poll_result(message):
     total_response = current_poll.total_response
     bot.send_message(message.chat.id, "Total " + str(total_response) + " response")
     for index, resp_count in current_poll.response.items():
-        bot.send_message(message.chat.id, str(options[index]) + " - " + str((response[index] / total_response) * 100))
+        bot.send_message(message.chat.id, str(options[index]) + " - " + str((response[index] / total_response) * 100)+"%")
     user.current_poll = None
 
 
@@ -62,12 +62,12 @@ def display_poll(message):
         bot.send_message(message.chat.id, "You have already answered to this poll")
         get_poll_result(message)
     else:
-        bot.send_message(message.chat.id, str(current_poll.question))
+        #bot.send_message(message.chat.id, str(current_poll.question))
+        markup = InlineKeyboardMarkup()
+        markup.row_width = 1
         for index, option in current_poll.options.items():
-            markup = InlineKeyboardMarkup()
-            markup.row_width = 1
             markup.add(InlineKeyboardButton(text=option, callback_data=index))
-            bot.send_message(message.chat.id, index, reply_markup=markup)
+        bot.send_message(message.chat.id, str(current_poll.question), reply_markup=markup)
  
 
 
@@ -77,15 +77,14 @@ def get_active_poll(message):
     counter = 1
     if bool(poll_dict):
         for message_id, poll in poll_dict.items():
-            active_poll["active_poll_" + str(counter)] = poll
+            active_poll["Active Poll " + str(counter)] = poll
             counter += 1
-        bot.send_message(message.chat.id, "Choose a poll to answer")
         user.active_poll = active_poll
+        markup = InlineKeyboardMarkup()
+        markup.row_width = 1
         for index, poll in active_poll.items():
-            markup = InlineKeyboardMarkup()
-            markup.row_width = 1
             markup.add(InlineKeyboardButton(text=poll.about_poll, callback_data=index))
-            bot.send_message(message.chat.id, index, reply_markup=markup)
+        bot.send_message(message.chat.id, "Choose a poll to answer", reply_markup=markup)
     else:
         bot.send_message(message.chat.id, "There is no active poll")
 
@@ -95,13 +94,13 @@ def get_options(message):
     poll = poll_dict[message.chat.id]
     options = poll.options
     if not options:
-        poll.options = {"option_"+str(poll.current_option_no): current_option}
+        poll.options = {"Option "+str(poll.current_option_no): current_option}
     else:
-        options["option_"+str(poll.current_option_no)] = current_option
+        options["Option "+str(poll.current_option_no)] = current_option
         poll.options = options
     poll.current_option_no += 1
     if poll.current_option_no <= poll.no_of_options:
-        bot.reply_to(message, "Give option" + str(poll.current_option_no))
+        bot.reply_to(message, "Give option " + str(poll.current_option_no))
         bot.register_next_step_handler(message, get_options)
     else:
         bot.send_message(message.chat.id, "Poll has been created")
@@ -115,9 +114,9 @@ def get_number_of_options(message):
         poll.current_option_no = 1
         response = {}
         for i in range(1, poll.no_of_options + 1):
-            response["option_"+str(i)] = 0
+            response["Option "+str(i)] = 0
         poll.response = response
-        bot.reply_to(message, "Enter option " + str(poll.current_option_no))
+        bot.reply_to(message, "Give option " + str(poll.current_option_no))
         bot.register_next_step_handler(message, get_options)
     except ValueError:
         bot.reply_to(message, "Give a valid input")

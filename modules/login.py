@@ -41,8 +41,8 @@ def front_page(user, message):
     markup.add(InlineKeyboardButton("Aviral marks", callback_data="aviral"),
                InlineKeyboardButton("New announcements", callback_data="announcement"))
     markup.add(InlineKeyboardButton("Online Class links", callback_data="classlinks"))
-    markup.add(InlineKeyboardButton("Create Poll", callback_data="createpoll"),
-               InlineKeyboardButton("Active Poll", callback_data="activepoll"))
+    markup.add(InlineKeyboardButton("Create Poll", callback_data="create_poll"),
+               InlineKeyboardButton("Show Active Poll", callback_data="show_poll"))
     if user.is_admin:
         bot.send_message(message.chat.id, "Awesome you are an admin!!!")
         markup.add(InlineKeyboardButton("Admin Panel", callback_data="admin_panel"))
