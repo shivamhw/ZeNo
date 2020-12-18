@@ -10,6 +10,6 @@ class Parser:
         return output_string
 
     def percentile(marks_analytics):
-        total_students = marks_analytics[0] + marks_analytics[1] + marks_analytics[2]
-        percentile = (marks_analytics[0]+marks_analytics[2])/total_students*100
+        total_students = marks_analytics[0] + marks_analytics[1] + marks_analytics[2]+1
+        percentile = (marks_analytics[0]+marks_analytics[2]+1)/total_students*100
         return percentile
