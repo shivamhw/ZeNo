@@ -1,10 +1,11 @@
 import sqlite3
 import logging
+from pathlib import Path
 
-
+HOME = str(Path.home())
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-file_handler = logging.FileHandler('database.log')
+file_handler = logging.FileHandler(HOME + '/Logs/database.log')
 formatter = logging.Formatter('%(levelname)s:%(name)s:%(funcName)s:%(message)s')
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
@@ -15,7 +16,9 @@ class Dbhelper:
     def __init__(self):
         try:
             logger.info("Establishing Connection to DB")
-            self.conn = sqlite3.connect('/home/shivamhw/iiit/PPR_Projects/students.db', check_same_thread=False)
+            #self.conn = sqlite3.connect('/home/shivamhw/iiit/PPR_Projects/students.db', check_same_thread=False)
+            self.conn = sqlite3.connect(HOME + '/Database/students.db', check_same_thread=False)
+
         except Exception as e:
             logger.error(e)
         else:
@@ -215,7 +218,7 @@ class Dbhelper:
 
         c.close()
 
-        return [lower_marks[0][0] , upper_marks[0][0], equal_marks[0][0]]
+        return [lower_marks[0][0] , upper_marks[0][0], equal_marks[0][0]-1]
 
 
     
