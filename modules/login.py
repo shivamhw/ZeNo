@@ -15,7 +15,7 @@ def login_callback(call):
 
 
 def get_username(message):
-    username = message.text
+    username = message.text.lower()
     user = User(username)
     users_dict[message.chat.id] = user
     bot.reply_to(message, "please enter you login pass")

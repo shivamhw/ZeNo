@@ -5,7 +5,7 @@ from modules.data import PollData
 
 @bot.callback_query_handler(func=lambda call: call.data == "create_poll")
 def poll_callback_handler(call):
-    #bot.answer_callback_query(call.id)
+    bot.answer_callback_query(call.id)
     bot.send_message(call.message.chat.id, "Remember few points")
     bot.send_message(call.message.chat.id, "1. User can create only one poll at a time")
     bot.send_message(call.message.chat.id, "2. For any poll only first reponse will be recorded")
@@ -15,6 +15,7 @@ def poll_callback_handler(call):
 
 @bot.callback_query_handler(func=lambda call: call.data == "show_poll")
 def show_poll(call):
+    bot.answer_callback_query(call.id)
     get_active_poll(call.message)
 
 
@@ -22,6 +23,7 @@ def show_poll(call):
 
 @bot.callback_query_handler(func=lambda call: "Active Poll" in call.data)
 def active_poll_handler(call):
+    bot.answer_callback_query(call.id)
     user = users_dict[call.message.chat.id]
     active_poll = user.active_poll
     user.current_poll = active_poll[call.data]
@@ -30,6 +32,7 @@ def active_poll_handler(call):
 
 @bot.callback_query_handler(func=lambda call: "Option" in call.data)
 def options_handler(call):
+    bot.answer_callback_query(call.id)
     user = users_dict[call.message.chat.id]
     current_poll = user.current_poll
     if user.answered_poll:
