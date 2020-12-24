@@ -3,3 +3,5 @@ __pycache__/
 log
 venv
 .idea
+err.log
+process.id
