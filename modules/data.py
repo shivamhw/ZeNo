@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List
 from modules import announcementscrapper
-
+from modules import dbhelper
 
 @dataclass
 class CurrentAnnouncement:
@@ -36,17 +36,29 @@ class User:
     def __init__(self, username):
         self.name = None
         self.username = username
-        self.password = None
+        self.chat_id = None
+        self.session = None
+        # self.password = None
         self.jwt_token = None
-        self.cookie = None
+        # self.cookie = None
         self.cs_token = None
         self.request_no = 0
+        self.semester = None
+        self.section = None
         self.is_admin = False
         self.admission_year = None
         self.program = None
         self.enrolled_courses = []
         self.current_poll = None
         self.answered_poll = None  # stores the object of all polls answered by user
+
+    def save_userdata(self, userdata):
+        self.section = userdata['section']
+        self.semester = userdata['semester']
+        self.admission_year = userdata['admission_year']
+        self.program = userdata['program']
+        self.name = userdata["first_name"]
+        dbhelper.save_user_db(self)
 
     def get_announcement(self) -> dict:
         if self.request_no == 5:

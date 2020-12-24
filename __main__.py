@@ -2,7 +2,7 @@ from modules import admin, classlinks, polls
 from ZeNo import bot, users_dict, poll_dict
 from modules.login import front_page
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
-
+from modules.dbhelper import is_in_db, get_user_db
 
 def gen_markup_login():
     markup = InlineKeyboardMarkup()
@@ -13,6 +13,11 @@ def gen_markup_login():
 
 def is_reg(message):
     if(message.chat.id in users_dict):
+        return True
+    elif(is_in_db(message.chat.id)):
+        bot.send_message(message.chat.id, "not in cache but trying to get it from db....")
+        user = get_user_db(message.chat.id)
+        users_dict[message.chat.id] = user
         return True
     return False
 
