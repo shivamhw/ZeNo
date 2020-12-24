@@ -1,10 +1,12 @@
-from dotenv import load_dotenv
+import os
 import telebot
 from modules import dbhelper
 users_dict = {}
 poll_dict = {}
 
-load_dotenv("config.env")
-TELE = '1420627782:AAHOEG9qjDK-4qOEGJg7YFnWnp8ieIS6iD4'
+TELE = os.environ['TELE']
 bot = telebot.TeleBot(TELE) or None
+if bot is None:
+    print("error in getting token")
+    exit(1)
 DB = dbhelper.Dbhelper()

@@ -5,7 +5,7 @@ from pathlib import Path
 HOME = str(Path.home())
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-file_handler = logging.FileHandler(HOME + '/Logs/database.log')
+file_handler = logging.FileHandler(HOME + '/database.log')
 formatter = logging.Formatter('%(asctime)s:%(levelname)s:%(name)s:%(funcName)s:%(message)s')
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
