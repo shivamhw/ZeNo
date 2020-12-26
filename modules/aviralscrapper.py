@@ -45,7 +45,8 @@ def login(username, password, chat_id):
     jwt_res =  json.loads(main_session.post(aviral_jwt_api_url, data=json.dumps(post_body_login)).text)
     user.jwt_token = jwt_res['jwt_token']
     user.chat_id = chat_id
-    header_auth['session'] = jwt_res['session_id']
+    user.session = jwt_res['session_id']
+
     user.cs_token = main_session.cookies.get_dict()['csrftoken']
     admins = ['mit2020122', 'mit2020080']
     if user.username in admins:
@@ -68,20 +69,24 @@ def get_userdata(user):
 
 
 def get_marks(message, user):
+    header_auth['session'] = user.session
     header_auth['Authorization'] = user.jwt_token
     header_auth['X-CSRFToken'] = user.cs_token
-    # print(header_auth.items())
-    user_marks = requests.get(aviral_marks_api, headers=header_auth)
-    # print(user_marks)
-    god_draft = json.loads(user_marks.text)
-    for i in god_draft:
-        print(f"Your marks in {i['name']} is {i['c1_marks']}")
-        if(i['name'] not in user.enrolled_courses):
-            # print("firsst")
-            user.enrolled_courses.append(i['name'])
-    print(user.enrolled_courses)
-    marks = Parser.marks_parser(god_draft)
-    bot.send_message(message.chat.id, marks)
+    try:
+        user_marks = requests.get(aviral_marks_api, headers=header_auth)
+        god_draft = json.loads(user_marks.text)
+        for i in god_draft:
+            print(f"Your marks in {i['name']} is {i['c1_marks']}")
+            if(i['name'] not in user.enrolled_courses):
+                user.enrolled_courses.append(i['name'])
+        print(user.enrolled_courses)
+        marks = Parser.marks_parser(god_draft)
+        bot.send_message(message.chat.id, marks)
+    except:
+        bot.send_message(message.chat.id, "something went wrong!!! please /start again")
+        del users_dict[message.chat.id]
+        user.del_user_db()
+    #     del from DB and users_dict
     # try:
     #     userdata = get_userdata(user)
     #     DB.register_user(userdata, god_draft)
