@@ -17,8 +17,8 @@ class Parser:
 class Pages:
     faq = ("1. Why use Zeno?"
            "\n\nAns. it is fast than aviral website and provides information more efficiently than any whatsapp group,"
-           "\nbut the main reason to use Zeno is because it is coded by your friends and you can view code and tinker around with stuff." 
-           "You can see how a amature codebase can scale or fail at production enviroment and try to fix the problems yourself"
+           "\nbut the main reason to use Zeno is because you can view code and tinker around with stuff. " 
+           "You can see how a fun little project can scale or fail at production enviroment and try to fix the problems yourself"
            "\n\n2. What about privacy?"
            "\n\nAns. Zeno works with token so it just saves your session with aviral. at no point of time your password is stored in any DB."
            )
