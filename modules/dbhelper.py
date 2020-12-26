@@ -19,6 +19,9 @@ def save_user_db(user):
         }
     )
 
+def del_user(user):
+    MONGO.users.delete_many({"chat_id" : user.chat_id})
+
 def is_in_db(chat_id):
     user = MONGO.users.find_one({'chat_id': chat_id})
     if user is None:
