@@ -1,6 +1,7 @@
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 from ZeNo import users_dict, bot
 from modules.data import User
+from modules import notes
 from modules import aviralscrapper as avi
 from modules.dbhelper import is_in_db
 @bot.callback_query_handler(func=lambda call: call.data == "main_login")
@@ -16,12 +17,15 @@ def login_callback(call):
 
 @bot.callback_query_handler(func=lambda call: call.data == "logout")
 def login_callback(call):
+    bot.answer_callback_query(call.id)
     if call.message.chat.id not in users_dict and not is_in_db(call.message.chat.id):
-        bot.answer_callback_query(call.id)
         bot.send_message(call.message.chat.id, "you are not even logged in dada.\n Please click /start")
     else:
         bot.answer_callback_query(call.id)
-        logout(users_dict[call.message.chat.id])
+        if call.message.chat.id in users_dict:
+            logout(users_dict[call.message.chat.id])
+        else:
+            bot.send_message(call.message.chat.id, "Sorry!! we messed up .. :(\n just click /start")
 
 
 def get_username(message):
@@ -56,6 +60,10 @@ def front_page(user, message):
     markup.add(InlineKeyboardButton("Create Poll", callback_data="create_poll"),
                InlineKeyboardButton("Show Active Poll", callback_data="show_poll"),
                InlineKeyboardButton("Logout", callback_data="logout"))
+    markup.row_width = 2
+    markup.add(
+               InlineKeyboardButton("About", callback_data="about"),
+               InlineKeyboardButton("FAQ", callback_data="faq"))
     if user.is_admin:
         bot.send_message(message.chat.id, "Awesome you are an admin!!!")
         markup.add(InlineKeyboardButton("Admin Panel", callback_data="admin_panel"))
@@ -63,7 +71,7 @@ def front_page(user, message):
 
 def logout(user):
     user.del_user_db()
-    bot.send_message(user.chat_id, "Ohhhh okay then byeee....\n\nNote: After logout all your data will be deleted from our DB and cache.")
+    bot.send_message(user.chat_id, "Ohhhh okay then byeee....\n\nNote: After logout all your data will be deleted from our DB and cache.\n Send /hi or /start again to start")
     del users_dict[user.chat_id]
 # def trial_setup(user):
 #     admins = ['mit2020122', 'mit2020080']

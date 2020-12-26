@@ -9,6 +9,10 @@ def gen_markup_login():
     markup.row_width = 1
     markup.add(InlineKeyboardButton("Login Now", callback_data="main_login"),
                                InlineKeyboardButton("No Thanks", callback_data="cancel"))
+    markup.row_width = 2
+    markup.add(
+               InlineKeyboardButton("About", callback_data="about"),
+               InlineKeyboardButton("FAQ", callback_data="faq"))
     return markup
 
 def is_reg(message):
