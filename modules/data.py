@@ -52,6 +52,10 @@ class User:
         self.current_poll = None
         self.answered_poll = None  # stores the object of all polls answered by user
 
+
+    def del_user_db(self):
+        dbhelper.del_user(self)
+
     def save_userdata(self, userdata):
         self.section = userdata['section']
         self.semester = userdata['semester']
