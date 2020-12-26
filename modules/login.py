@@ -63,7 +63,7 @@ def front_page(user, message):
 
 def logout(user):
     user.del_user_db()
-    bot.send_message(user.chat_id, "Ohhhh okay then byeee....\n after logout all your data will be deleted from our DB and cache.")
+    bot.send_message(user.chat_id, "Ohhhh okay then byeee....\n\nNote: After logout all your data will be deleted from our DB and cache.")
     del users_dict[user.chat_id]
 # def trial_setup(user):
 #     admins = ['mit2020122', 'mit2020080']
