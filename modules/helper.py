@@ -6,7 +6,9 @@ class Parser:
             output_string += str(i['name']) + " : \n" \
                             + i['c1_marks'] + ' | ' \
                             + i['c2_marks'] + ' | ' \
-                            + i['c3_marks'] + '\n\n'
+                            + i['c3_marks'] + ' = ' \
+                            + i['total'] + '\n' \
+                            +"GPA = "+ i['gpa'] +'\n\n'
         return output_string
 
     def percentile(marks_analytics):
