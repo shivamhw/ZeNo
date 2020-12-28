@@ -3,7 +3,7 @@ from ZeNo import bot, poll_dict, users_dict
 from modules.data import PollData
 
 
-@bot.callback_query_handler(func=lambda call: call.data == "create_poll")
+# @bot.callback_query_handler(func=lambda call: call.data == "create_poll")
 def poll_callback_handler(call):
     bot.answer_callback_query(call.id)
     bot.send_message(call.message.chat.id, "Remember few points")
