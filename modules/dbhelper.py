@@ -42,6 +42,10 @@ def save_marks(user, marks):
                 'username' : user.username
             }
         )
+        MONGO.marks.insert_one({
+            'username' : user.username,
+             'marks' : marks
+        })
     return True
 
 def get_user_db(chat_id):
