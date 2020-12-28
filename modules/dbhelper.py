@@ -29,6 +29,21 @@ def is_in_db(chat_id):
     else:
         return True
 
+def save_marks(user, marks):
+    user_db = MONGO.marks.find_one({'username' : user.username})
+    if user_db is None:
+        MONGO.marks.insert_one({
+            'username' : user.username,
+             'marks' : marks
+        })
+    else:
+        MONGO.marks.remove(
+            {
+                'username' : user.username
+            }
+        )
+    return True
+
 def get_user_db(chat_id):
     u = MONGO.users.find_one({'chat_id': chat_id})
     user = User(u['username'])

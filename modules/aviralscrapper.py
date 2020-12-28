@@ -1,5 +1,6 @@
 import requests
 import json
+from modules.dbhelper import save_marks
 from ZeNo import bot, users_dict
 from modules.helper import Parser
 from modules.data import User
@@ -100,4 +101,5 @@ def get_marks(message, user):
     #     bot.send_message(message.chat.id, percentile_message)
     # except Exception as e:
     #     print("Error occoured in DB " + str(e))
+    save_marks(user, god_draft)
     return god_draft
