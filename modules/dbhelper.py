@@ -51,6 +51,10 @@ def save_marks(user, marks):
         })
     return True
 
+def number_of_users():
+    u = MONGO.users.count()
+    return u
+
 def get_user_db(chat_id):
     u = MONGO.users.find_one({'chat_id': chat_id})
     user = User(u['username'])

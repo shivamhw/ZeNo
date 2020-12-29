@@ -1,8 +1,10 @@
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 from ZeNo import bot, users_dict
 from modules import classlinks
+from modules.dbhelper import number_of_users
 amodules = {"broadcast": "Broadcast",
-            "change_classlinks": "Change Class Links"}
+            "change_classlinks": "Change Class Links",
+            "user_stats" : "Users REG"}
 broadcast_msg = "testB"
 
 
@@ -32,6 +34,8 @@ def handle(message, key):
         bot.register_next_step_handler(message, get_msg)
     if key == "change_classlinks":
         classlinks.set_classlinks(message)
+    if key == "user_stats":
+        bot.send_message(message.chat.id, "Number of reg. users : "+str(number_of_users()))
 
 def get_modules():
     return amodules
