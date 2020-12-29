@@ -97,6 +97,7 @@ def get_session(message, user):
 
 def get_marks(message, user, session):
     header_auth['session'] = session
+    user.session = session
     header_auth['Authorization'] = user.jwt_token
     header_auth['X-CSRFToken'] = user.cs_token
     try:
@@ -109,6 +110,8 @@ def get_marks(message, user, session):
         print(user.enrolled_courses)
         marks = Parser.marks_parser(god_draft)
         bot.send_message(message.chat.id, marks)
+        if marks != "\nNo Results for this session..":
+            save_marks(user, god_draft)
     except:
         bot.send_message(message.chat.id, "something went wrong!!! please /start again")
         del users_dict[message.chat.id]
@@ -127,5 +130,4 @@ def get_marks(message, user, session):
     #     bot.send_message(message.chat.id, percentile_message)
     # except Exception as e:
     #     print("Error occoured in DB " + str(e))
-    save_marks(user, god_draft)
     return god_draft
