@@ -3,12 +3,16 @@ import json
 from modules.dbhelper import save_marks
 from ZeNo import bot, users_dict
 from modules.helper import Parser
+from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
+
 from modules.data import User
 # API for requests
 aviral_login_url = "https://aviral.iiita.ac.in/login"
 aviral_jwt_api_url = "https://aviral.iiita.ac.in/api/login/"
 aviral_marks_api = "https://aviral.iiita.ac.in/api/student/enrolled_courses/"
 aviral_details_api = "https://aviral.iiita.ac.in/api/student/dashboard/"
+aviral_sessions_api = "https://aviral.iiita.ac.in/api/sessions/"
+
 
 # Global Variables
 header_auth = {
@@ -24,11 +28,21 @@ header_auth = {
 }
 
 
+@bot.callback_query_handler(func=lambda call: call.data.startswith("getmarks_"))
+def callback_query(call):
+    bot.answer_callback_query(call.id)
+    if call.message.chat.id in users_dict:
+        session = call.data[9:]
+        get_marks(call.message, users_dict[call.message.chat.id],session)
+    else:
+        bot.send_message(call.message.chat.id, "Please /start again")
+
+
 @bot.callback_query_handler(func=lambda call: call.data == "aviral")
 def callback_query(call):
     bot.answer_callback_query(call.id)
     if call.message.chat.id in users_dict:
-        get_marks(call.message, users_dict[call.message.chat.id])
+        get_session(call.message, users_dict[call.message.chat.id])
     else:
         bot.send_message(call.message.chat.id, "Please /start again")
 
@@ -46,6 +60,7 @@ def login(username, password, chat_id):
     jwt_res =  json.loads(main_session.post(aviral_jwt_api_url, data=json.dumps(post_body_login)).text)
     user.jwt_token = jwt_res['jwt_token']
     user.chat_id = chat_id
+
     user.session = jwt_res['session_id']
 
     user.cs_token = main_session.cookies.get_dict()['csrftoken']
@@ -68,9 +83,20 @@ def get_userdata(user):
     print(f"Hello {user_data['first_name']}")
     return user_data
 
+def get_session(message, user):
+    header_auth['Authorization'] = user.jwt_token
+    header_auth['X-CSRFToken'] = user.cs_token
+    sessions = requests.get(url=aviral_sessions_api, headers=header_auth).json()
+    print(sessions)
+    markup = InlineKeyboardMarkup()
+    markup.row_width = 2
+    for i in sessions:
+        markup.add(InlineKeyboardButton(i['name'], callback_data="getmarks_"+i['session_id']))
+    bot.send_message(user.chat_id, "Which Session??", reply_markup=markup)
 
-def get_marks(message, user):
-    header_auth['session'] = user.session
+
+def get_marks(message, user, session):
+    header_auth['session'] = session
     header_auth['Authorization'] = user.jwt_token
     header_auth['X-CSRFToken'] = user.cs_token
     try:
