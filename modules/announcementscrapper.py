@@ -13,7 +13,7 @@ import re
 url = "https://www.iiita.ac.in/announcements.php?page=1"
 
 
-@bot.callback_query_handler(func=lambda call: call.data in ["announcement", "refresh_anc"])
+# @bot.callback_query_handler(func=lambda call: call.data in ["announcement", "refresh_anc"])
 def announce_callback_handler(call):
     if call.data == "announcement":
         bot.answer_callback_query(call.id)
