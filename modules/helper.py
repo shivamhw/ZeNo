@@ -9,6 +9,8 @@ class Parser:
                             + i['c3_marks'] + ' = ' \
                             + i['total'] + '\n' \
                             +"GPA = "+ i['gpa'] +'\n\n'
+        if output_string == 'Results: \n\n':
+            output_string = "\nNo Results for this session.."
         return output_string
 
     def percentile(marks_analytics):
