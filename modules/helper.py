@@ -13,6 +13,13 @@ class Parser:
             output_string = "\nNo Results for this session.."
         return output_string
 
+    def special_parser(data):
+        output_string = "Current allotment:\n\n"
+        for i,j in data.items():
+            output_string += str(i) + " : " + str(j) + "\n"
+        return output_string
+
+
     def cgpi_parser(user_data):
         output_string = "Final Results: \n"
         output_string += "Semester : "+user_data['semester']

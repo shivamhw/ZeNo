@@ -12,7 +12,7 @@ aviral_jwt_api_url = "https://aviral.iiita.ac.in/api/login/"
 aviral_marks_api = "https://aviral.iiita.ac.in/api/student/enrolled_courses/"
 aviral_details_api = "https://aviral.iiita.ac.in/api/student/dashboard/"
 aviral_sessions_api = "https://aviral.iiita.ac.in/api/sessions/"
-
+aviral_specialize_api = "https://aviral.iiita.ac.in/api/student/mtechspls/status/"
 
 # Global Variables
 header_auth = {
@@ -43,6 +43,14 @@ def callback_query(call):
     bot.answer_callback_query(call.id)
     if call.message.chat.id in users_dict:
         get_session(call.message, users_dict[call.message.chat.id])
+    else:
+        bot.send_message(call.message.chat.id, "Please /start again")
+
+@bot.callback_query_handler(func=lambda call: call.data == "aviral_spl")
+def callback_query(call):
+    bot.answer_callback_query(call.id)
+    if call.message.chat.id in users_dict:
+        get_special(call.message, users_dict[call.message.chat.id])
     else:
         bot.send_message(call.message.chat.id, "Please /start again")
 
@@ -94,6 +102,15 @@ def get_session(message, user):
         markup.add(InlineKeyboardButton(i['name'], callback_data="getmarks_"+i['session_id']))
     bot.send_message(user.chat_id, "Which Session??", reply_markup=markup)
 
+def get_special(message, user):
+    header_auth['Authorization'] = user.jwt_token
+    header_auth['X-CSRFToken'] = user.cs_token
+    special_li = requests.get(aviral_specialize_api, headers=header_auth).json()
+    try:
+        spe = Parser.special_parser(special_li)
+    except Exception as e:
+        spe = "Please fix" +str(e) +" in code."
+    bot.send_message(message.chat.id, spe)
 
 def get_marks(message, user, session):
     header_auth['session'] = session
