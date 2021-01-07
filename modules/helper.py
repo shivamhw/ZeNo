@@ -13,6 +13,12 @@ class Parser:
             output_string = "\nNo Results for this session.."
         return output_string
 
+    def cgpi_parser(user_data):
+        output_string = "Final Results: \n"
+        output_string += "Semester : "+user_data['semester']
+        output_string += "\nCGPI : "+str(user_data['cgpi'])
+        return output_string
+
     def percentile(marks_analytics):
         total_students = marks_analytics[0] + marks_analytics[1] + marks_analytics[2]+1
         percentile = (marks_analytics[0]+marks_analytics[2]+1)/total_students*100

@@ -102,6 +102,7 @@ def get_marks(message, user, session):
     header_auth['X-CSRFToken'] = user.cs_token
     try:
         user_marks = requests.get(aviral_marks_api, headers=header_auth)
+        user_data = requests.get(aviral_details_api, headers=header_auth).json()
         god_draft = json.loads(user_marks.text)
         for i in god_draft:
             print(f"Your marks in {i['name']} is {i['c1_marks']}")
@@ -109,10 +110,13 @@ def get_marks(message, user, session):
                 user.enrolled_courses.append(i['name'])
         print(user.enrolled_courses)
         marks = Parser.marks_parser(god_draft)
+        cgpi = Parser.cgpi_parser(user_data)
         bot.send_message(message.chat.id, marks)
+        bot.send_message(message.chat.id, cgpi)
         if marks != "\nNo Results for this session..":
             save_marks(user, god_draft)
-    except:
+    except Exception as e:
+        print(str(e))
         bot.send_message(message.chat.id, "something went wrong!!! please /start again")
         del users_dict[message.chat.id]
         user.del_user_db()
