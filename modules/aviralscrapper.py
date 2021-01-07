@@ -105,11 +105,11 @@ def get_session(message, user):
 def get_special(message, user):
     header_auth['Authorization'] = user.jwt_token
     header_auth['X-CSRFToken'] = user.cs_token
-    # special_li = requests.get(aviral_details_api, headers=header_auth).json()
-    special_li = requests.get(aviral_specialize_api, headers=header_auth).json()
+    special_li = requests.get(aviral_details_api, headers=header_auth).json()
+    # special_li = requests.get(aviral_specialize_api, headers=header_auth).json()
     try:
-        # spe = special_li['program']
-        spe = Parser.special_parser(special_li)
+        spe = special_li['program']
+      #  spe = Parser.special_parser(special_li)
     except Exception as e:
         spe = "Please fix" +str(e) +" in code."
     bot.send_message(message.chat.id, spe)
