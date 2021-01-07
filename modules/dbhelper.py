@@ -55,6 +55,13 @@ def number_of_users():
     u = MONGO.users.count()
     return u
 
+def get_all_users():
+    users = MONGO.users.find({})
+    output = []
+    for i in users:
+        output.append(str(i['chat_id']))
+    return output
+
 def get_user_db(chat_id):
     u = MONGO.users.find_one({'chat_id': chat_id})
     user = User(u['username'])
