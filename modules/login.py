@@ -38,15 +38,11 @@ def get_username(message):
 
 def get_password(message, username):
     password = message.text
-    # user = users_dict[message.chat.id]
-    # user.password = password
     user = avi.login(username, password, message.chat.id)
     if user is None:
-        bot.send_message(message.chat.id, "sahi dal le waps se.... Waps start kro /start")
-        # del users_dict[message.chat.id]
+        bot.send_message(message.chat.id, "Can't login to aviral. please /start again")
     else:
         users_dict[message.chat.id] = user
-        # trial_setup(user)
         front_page(user, message)
 
 
