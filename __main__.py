@@ -3,6 +3,7 @@ from ZeNo import bot, users_dict, poll_dict
 from modules.login import front_page
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 from modules.dbhelper import is_in_db, get_user_db
+import time
 
 def gen_markup_login():
     markup = InlineKeyboardMarkup()
@@ -46,4 +47,9 @@ def message_handler(message):
 
 
 #### BOT STARTING POINT
-bot.polling(none_stop=True)
+while(True):
+    try:
+        time.sleep(2)
+        bot.polling(none_stop=True)
+    except:
+        print("something went wrong in main")
