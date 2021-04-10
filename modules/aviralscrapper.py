@@ -57,30 +57,27 @@ def callback_query(call):
 
 def login(username, password, chat_id):
     main_session = requests.Session()
-    main_session.get(aviral_login_url)
-    # username = user.username
-    # password = user.password
+
     post_body_login = {"username": username, "password": password}
-    res = main_session.post(aviral_jwt_api_url, data=json.dumps(post_body_login))
+    try:
+        print("hiiii")
+        main_session.get(aviral_login_url)
+        res = main_session.post(aviral_jwt_api_url, data=json.dumps(post_body_login), timeout=3)
+        print("hiiii")
+    except:
+        return None
     if res.text == '{"user_group": null}':
         return None
     user = User(username)
     jwt_res =  json.loads(main_session.post(aviral_jwt_api_url, data=json.dumps(post_body_login)).text)
     user.jwt_token = jwt_res['jwt_token']
     user.chat_id = chat_id
-
     user.session = jwt_res['session_id']
-
     user.cs_token = main_session.cookies.get_dict()['csrftoken']
     admins = ['mit2020122', 'mit2020080']
     if user.username in admins:
         user.is_admin = True
-    # user.cookie = main_session.cookies
     user.save_userdata(get_userdata(user))
-    # user_data = get_userdata(user)
-    # user.name = user_data['first_name']
-    # user.admission_year = user_data['admission_year']
-    # user.program = user_data['program']
     return user
 
 
