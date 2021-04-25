@@ -38,9 +38,7 @@ class User:
         self.username = username
         self.chat_id = None
         self.session = None
-        # self.password = None
         self.jwt_token = None
-        # self.cookie = None
         self.cs_token = None
         self.request_no = 0
         self.semester = None
