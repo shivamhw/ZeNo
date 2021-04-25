@@ -1,3 +1,5 @@
+from ZeNo import bot, users_dict
+from modules.dbhelper import is_in_db,get_user_db
 
 class Parser:
     def marks_parser(raw_data):
@@ -42,8 +44,18 @@ class Pages:
            )
     about = ("Zeno started as a fun project but became a part of developers life."
              "\n\nIt is here to provide a single point of contact for IIITA students so they dont need to switch between different platform to get something done."
-             "\n\nGitHub : bit.ly/zeno-iiita (PRIVATE FOR NOW.)"
+             "\n\nGitHub : bit.ly/zeno-iiita "
              )
     pages = {'about': about, 'faq': faq}
     def get_note(note):
         return Pages.pages[note]
+
+def is_reg(message):
+    if(message.chat.id in users_dict):
+        return True
+    elif(is_in_db(message.chat.id)):
+        bot.send_message(message.chat.id, "not in cache but trying to get it from db....")
+        user = get_user_db(message.chat.id)
+        users_dict[message.chat.id] = user
+        return True
+    return False
