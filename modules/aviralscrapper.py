@@ -2,7 +2,8 @@ import requests
 import json
 from modules.dbhelper import save_marks
 from ZeNo import bot, users_dict
-from modules.helper import Parser
+import sys
+from modules.helper import Parser, is_reg
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from modules.data import User
@@ -22,7 +23,7 @@ header_auth = {
     "Accept-Language": "en-US,en;q=0.5",
     "Accept-Encoding": "gzip, deflate, br",
     "Authorization": '',
-    "session" : 'JUL-20',
+    "session" : '',
     "X-CSRFToken": '',
     "Referer": "https://aviral.iiita.ac.in/student/courses/"
 }
@@ -31,7 +32,7 @@ header_auth = {
 @bot.callback_query_handler(func=lambda call: call.data.startswith("getmarks_"))
 def callback_query(call):
     bot.answer_callback_query(call.id)
-    if call.message.chat.id in users_dict:
+    if is_reg(call.message):
         session = call.data[9:]
         get_marks(call.message, users_dict[call.message.chat.id],session)
     else:
@@ -41,14 +42,14 @@ def callback_query(call):
 @bot.callback_query_handler(func=lambda call: call.data == "aviral")
 def callback_query(call):
     bot.answer_callback_query(call.id)
-    if call.message.chat.id in users_dict:
+    if is_reg(call.message):
         get_session(call.message, users_dict[call.message.chat.id])
     else:
         bot.send_message(call.message.chat.id, "Please /start again")
 
 @bot.callback_query_handler(func=lambda call: call.data == "aviral_spl")
 def callback_query(call):
-    bot.answer_callback_query(call.id)
+    bot.answenotr_callback_query(call.id)
     if call.message.chat.id in users_dict:
         get_special(call.message, users_dict[call.message.chat.id])
     else:
@@ -57,33 +58,38 @@ def callback_query(call):
 
 def login(username, password, chat_id):
     main_session = requests.Session()
-
     post_body_login = {"username": username, "password": password}
+    print("started logn")
     try:
-        print("hiiii")
         main_session.get(aviral_login_url)
-        res = main_session.post(aviral_jwt_api_url, data=json.dumps(post_body_login), timeout=3)
-        print("hiiii")
+        res = main_session.post(aviral_jwt_api_url, data=json.dumps(post_body_login), timeout=5)
+        if res.text == '{"user_group": null}':
+            return None
+        jwt_res =  json.loads(main_session.post(aviral_jwt_api_url, data=json.dumps(post_body_login)).text)
+        print("login suxx" , jwt_res)
+        user = User(username)
+        user.jwt_token = jwt_res['jwt_token']
+        print(user.jwt_token, "jwt")
+        user.chat_id = chat_id
+        user.session = jwt_res['session_id']
+        print(user.session, "sees")
+        user.cs_token = main_session.cookies.get_dict()['csrftoken']
+        print(user.cs_token)
+        try:
+            user.save_userdata(get_userdata(user))
+        except:
+            print("error getting userdata")
+        print("resturn user")
+        return user
     except:
+        print(sys.exc_info())
         return None
-    if res.text == '{"user_group": null}':
-        return None
-    user = User(username)
-    jwt_res =  json.loads(main_session.post(aviral_jwt_api_url, data=json.dumps(post_body_login)).text)
-    user.jwt_token = jwt_res['jwt_token']
-    user.chat_id = chat_id
-    user.session = jwt_res['session_id']
-    user.cs_token = main_session.cookies.get_dict()['csrftoken']
-    admins = ['mit2020122', 'mit2020080']
-    if user.username in admins:
-        user.is_admin = True
-    user.save_userdata(get_userdata(user))
-    return user
 
 
 def get_userdata(user):
     header_auth['Authorization'] = user.jwt_token
     header_auth['X-CSRFToken'] = user.cs_token
+    header_auth['session'] = user.session
     user_data = requests.get(aviral_details_api, headers=header_auth).json()
     print(f"Hello {user_data['first_name']}")
     return user_data
@@ -91,13 +97,18 @@ def get_userdata(user):
 def get_session(message, user):
     header_auth['Authorization'] = user.jwt_token
     header_auth['X-CSRFToken'] = user.cs_token
-    sessions = requests.get(url=aviral_sessions_api, headers=header_auth).json()
-    print(sessions)
-    markup = InlineKeyboardMarkup()
-    markup.row_width = 2
-    for i in sessions:
-        markup.add(InlineKeyboardButton(i['name'], callback_data="getmarks_"+i['session_id']))
-    bot.send_message(user.chat_id, "Which Session??", reply_markup=markup)
+    header_auth['session'] = user.session
+    try:
+        sessions = requests.get(url=aviral_sessions_api, headers=header_auth).json()
+        print(sessions)
+        markup = InlineKeyboardMarkup()
+        markup.row_width = 2
+        for i in sessions:
+            markup.add(InlineKeyboardButton(i['name'], callback_data="getmarks_"+i['session_id']))
+        bot.send_message(user.chat_id, "Which Session??", reply_markup=markup)
+    except:
+        print("error getting session")
+        bot.send_message(user.chat_id, "error getting session details. /start again")
 
 def get_special(message, user):
     header_auth['Authorization'] = user.jwt_token
@@ -114,6 +125,7 @@ def get_marks(message, user, session):
     user.session = session
     header_auth['Authorization'] = user.jwt_token
     header_auth['X-CSRFToken'] = user.cs_token
+    god_draft = None
     try:
         user_marks = requests.get(aviral_marks_api, headers=header_auth)
         user_data = requests.get(aviral_details_api, headers=header_auth).json()
