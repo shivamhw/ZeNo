@@ -54,8 +54,7 @@ def front_page(user, message):
     # markup.add(InlineKeyboardButton("MTECH Specialization Results !", callback_data="aviral_spl"))
     markup.add(InlineKeyboardButton("Aviral marks", callback_data="aviral")) # InlineKeyboardButton("New announcements", callback_data="announcement")
     markup.add(InlineKeyboardButton("Online Class links", callback_data="classlinks"))
-    markup.add(InlineKeyboardButton("Show Active Poll", callback_data="show_poll"),
-               InlineKeyboardButton("Logout", callback_data="logout"))   #InlineKeyboardButton("Create Poll", callback_data="create_poll"),
+    markup.add(InlineKeyboardButton("Logout", callback_data="logout"))   #InlineKeyboardButton("Create Poll", callback_data="create_poll"),
     markup.row_width = 2
     markup.add(
                InlineKeyboardButton("About", callback_data="about"),
