@@ -103,10 +103,8 @@ def get_special(message, user):
     header_auth['Authorization'] = user.jwt_token
     header_auth['X-CSRFToken'] = user.cs_token
     special_li = requests.get(aviral_details_api, headers=header_auth).json()
-    # special_li = requests.get(aviral_specialize_api, headers=header_auth).json()
     try:
         spe = special_li['program']
-      #  spe = Parser.special_parser(special_li)
     except Exception as e:
         spe = "Please fix" +str(e) +" in code."
     bot.send_message(message.chat.id, spe)
@@ -136,18 +134,4 @@ def get_marks(message, user, session):
         bot.send_message(message.chat.id, "something went wrong!!! please /start again")
         del users_dict[message.chat.id]
         user.del_user_db()
-    #     del from DB and users_dict
-    # try:
-    #     userdata = get_userdata(user)
-    #     DB.register_user(userdata, god_draft)
-    #     analytics = DB.get_analytics(userdata["student_id"])
-    #     analytics_message = "Students with less marks : " + str(analytics[0]) + "\n\n" \
-    #                         + "Students with more marks : " + str(analytics[1]) + "\n\n" \
-    #                         + "Students with equal marks : " + str(analytics[2])
-    #     bot.send_message(message.chat.id, analytics_message)
-    #     percentile = Parser.percentile(analytics)
-    #     percentile_message = "Your class percentile is : " + str(percentile)
-    #     bot.send_message(message.chat.id, percentile_message)
-    # except Exception as e:
-    #     print("Error occoured in DB " + str(e))
     return god_draft
