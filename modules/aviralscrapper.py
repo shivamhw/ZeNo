@@ -122,7 +122,7 @@ def get_special(message, user):
 
 def get_marks(message, user, session):
     header_auth['session'] = session
-    user.session = session
+    # user.session = session
     header_auth['Authorization'] = user.jwt_token
     header_auth['X-CSRFToken'] = user.cs_token
     god_draft = None
