@@ -1,4 +1,3 @@
-from modules import admin, classlinks, polls
 from ZeNo import bot, users_dict, poll_dict
 from modules.login import front_page
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
@@ -37,6 +36,9 @@ def message_handler(message):
         front_page(users_dict[message.chat.id], message)
     else:
         bot.send_message(message.chat.id, "ohhh! you are not logged in!", reply_markup=gen_markup_login())
+
+
+
 
 
 #### BOT STARTING POINT
