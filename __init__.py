@@ -1,7 +1,8 @@
 import os
 import telebot
 from pymongo import MongoClient
-
+from importlib import import_module
+from modules import ALL_MODULES
 
 users_dict = {}
 poll_dict = {}
@@ -17,3 +18,6 @@ if bot is None:
 
 client = MongoClient(MongoURI)
 MONGO = client.zeno
+
+for module_name in ALL_MODULES:
+    imported_module = import_module("ZeNo.modules." + module_name)
