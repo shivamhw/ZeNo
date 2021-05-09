@@ -1,6 +1,6 @@
 import telebot
 
-bot = telebot.TeleBot("1422837559:AAEWGEujmJWy_cgvZUCChEGMleclYWdJ1OY")
+bot = telebot.TeleBot("Token")
 
 @bot.message_handler(commands=['start', 'help'])
 def send_welcome(message):
