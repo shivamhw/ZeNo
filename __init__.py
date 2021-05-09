@@ -7,9 +7,7 @@ from modules import ALL_MODULES
 users_dict = {}
 poll_dict = {}
 
-
-
-TELE = os.environ['TELE']
+TELE: str = os.environ['TELE']
 MongoURI = os.environ['MongoURI']
 bot = telebot.TeleBot(TELE) or None
 if bot is None:

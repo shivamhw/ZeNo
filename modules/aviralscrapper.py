@@ -7,6 +7,7 @@ from modules.helper import Parser, is_reg
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from modules.data import User
+
 # API for requests
 aviral_login_url = "https://aviral.iiita.ac.in/login"
 aviral_jwt_api_url = "https://aviral.iiita.ac.in/api/login/"
@@ -23,7 +24,7 @@ header_auth = {
     "Accept-Language": "en-US,en;q=0.5",
     "Accept-Encoding": "gzip, deflate, br",
     "Authorization": '',
-    "session" : '',
+    "session": '',
     "X-CSRFToken": '',
     "Referer": "https://aviral.iiita.ac.in/student/courses/"
 }
@@ -34,7 +35,7 @@ def callback_query(call):
     bot.answer_callback_query(call.id)
     if is_reg(call.message):
         session = call.data[9:]
-        get_marks(call.message, users_dict[call.message.chat.id],session)
+        get_marks(call.message, users_dict[call.message.chat.id], session)
     else:
         bot.send_message(call.message.chat.id, "Please /start again")
 
@@ -46,6 +47,7 @@ def callback_query(call):
         get_session(call.message, users_dict[call.message.chat.id])
     else:
         bot.send_message(call.message.chat.id, "Please /start again")
+
 
 @bot.callback_query_handler(func=lambda call: call.data == "aviral_spl")
 def callback_query(call):
@@ -59,22 +61,17 @@ def callback_query(call):
 def login(username, password, chat_id):
     main_session = requests.Session()
     post_body_login = {"username": username, "password": password}
-    print("started logn")
     try:
         main_session.get(aviral_login_url)
         res = main_session.post(aviral_jwt_api_url, data=json.dumps(post_body_login), timeout=5)
         if res.text == '{"user_group": null}':
             return None
-        jwt_res =  json.loads(main_session.post(aviral_jwt_api_url, data=json.dumps(post_body_login)).text)
-        print("login suxx" , jwt_res)
+        jwt_res = json.loads(main_session.post(aviral_jwt_api_url, data=json.dumps(post_body_login)).text)
         user = User(username)
         user.jwt_token = jwt_res['jwt_token']
-        print(user.jwt_token, "jwt")
         user.chat_id = chat_id
         user.session = jwt_res['session_id']
-        print(user.session, "sees")
         user.cs_token = main_session.cookies.get_dict()['csrftoken']
-        print(user.cs_token)
         try:
             user.save_userdata(get_userdata(user))
         except:
@@ -94,7 +91,9 @@ def get_userdata(user):
     print(f"Hello {user_data['first_name']}")
     return user_data
 
+
 def get_session(message, user):
+    msg = bot.send_message(user.chat_id, "Getting session details.....")
     header_auth['Authorization'] = user.jwt_token
     header_auth['X-CSRFToken'] = user.cs_token
     header_auth['session'] = user.session
@@ -104,11 +103,14 @@ def get_session(message, user):
         markup = InlineKeyboardMarkup()
         markup.row_width = 2
         for i in sessions:
-            markup.add(InlineKeyboardButton(i['name'], callback_data="getmarks_"+i['session_id']))
+            markup.add(InlineKeyboardButton(i['name'], callback_data="getmarks_" + i['session_id']))
         bot.send_message(user.chat_id, "Which Session??", reply_markup=markup)
-    except:
+    except Exception as e:
         print("error getting session")
+        print(str(e))
         bot.send_message(user.chat_id, "error getting session details. /start again")
+    bot.delete_message(msg.chat.id, msg.id)
+
 
 def get_special(message, user):
     header_auth['Authorization'] = user.jwt_token
@@ -117,10 +119,13 @@ def get_special(message, user):
     try:
         spe = special_li['program']
     except Exception as e:
-        spe = "Please fix" +str(e) +" in code."
+        spe = "Please fix" + str(e) + " in code."
     bot.send_message(message.chat.id, spe)
 
+
 def get_marks(message, user, session):
+    bot.delete_message(message.chat.id, message.id)
+    wait_msg = bot.send_message(message.chat.id, "Getting marks for "+session+" Session....")
     header_auth['session'] = session
     # user.session = session
     header_auth['Authorization'] = user.jwt_token
@@ -132,7 +137,7 @@ def get_marks(message, user, session):
         god_draft = json.loads(user_marks.text)
         for i in god_draft:
             print(f"Your marks in {i['name']} is {i['c1_marks']}")
-            if(i['name'] not in user.enrolled_courses):
+            if (i['name'] not in user.enrolled_courses):
                 user.enrolled_courses.append(i['name'])
         print(user.enrolled_courses)
         marks = Parser.marks_parser(god_draft)
@@ -146,4 +151,5 @@ def get_marks(message, user, session):
         bot.send_message(message.chat.id, "something went wrong!!! please /start again")
         del users_dict[message.chat.id]
         user.del_user_db()
+    bot.delete_message(wait_msg.chat.id, wait_msg.id)
     return god_draft
