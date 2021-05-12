@@ -127,7 +127,6 @@ def get_marks(message, user, session):
     bot.delete_message(message.chat.id, message.id)
     wait_msg = bot.send_message(message.chat.id, "Getting marks for "+session+" Session....")
     header_auth['session'] = session
-    # user.session = session
     header_auth['Authorization'] = user.jwt_token
     header_auth['X-CSRFToken'] = user.cs_token
     god_draft = None
@@ -137,11 +136,10 @@ def get_marks(message, user, session):
         god_draft = json.loads(user_marks.text)
         for i in god_draft:
             print(f"Your marks in {i['name']} is {i['c1_marks']}")
-            if (i['name'] not in user.enrolled_courses):
+            if i['name'] not in user.enrolled_courses:
                 user.enrolled_courses.append(i['name'])
-        print(user.enrolled_courses)
-        marks = Parser.marks_parser(god_draft)
-        cgpi = Parser.cgpi_parser(user_data)
+        marks = Parser.marks_parser(god_draft, session, analytics=True)
+        cgpi = Parser.cgpi_parser(user_data, session, analytics=True)
         bot.send_message(message.chat.id, marks)
         if marks != "\nNo Results for this session..":
             bot.send_message(message.chat.id, cgpi)
