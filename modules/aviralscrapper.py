@@ -143,7 +143,7 @@ def get_marks(message, user, session):
         bot.send_message(message.chat.id, marks)
         if marks != "\nNo Results for this session..":
             bot.send_message(message.chat.id, cgpi)
-            save_marks(user, god_draft)
+            save_marks(user, session, god_draft)
     except Exception as e:
         print(str(e))
         bot.send_message(message.chat.id, "something went wrong!!! please /start again")

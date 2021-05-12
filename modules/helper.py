@@ -7,7 +7,7 @@ class emojis:
         "first_rank": "🥇",
         "second_rank": "🥈",
         "third_rank": "🥉",
-        "other_rank": "🏵",
+        "other_rank": "🎉",
         "bar_chart": "📊",
         "lock_key": "🔐",
         "question_mark": "❓"
@@ -38,7 +38,7 @@ class Parser:
                     marks_cur += float(i['c2_marks'])
                 if i['c3_marks'] != "N/A":
                     marks_cur += float(i['c3_marks'])
-                rank, total = get_analytics(session, i['course_id'], marks_cur)
+                rank, total = get_analytics(session, i['name'], marks_cur)
                 output_string += "Rank: "
                 if rank == 1:
                     output_string += emojis.get_emoji("first_rank")

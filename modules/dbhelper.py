@@ -24,26 +24,26 @@ def save_user_db(user):
 
 
 def get_analytics(session, course_id, user_marks):
-    query = {"$and": [{"session": session}, {"marks": {"$elemMatch": {"course_id": course_id}}}]}
+    query = {"$and": [{"session": session}, {"marks": {"$elemMatch": {"name": course_id}}}]}
     analytics = list(MONGO.marks.find(query))
     total = len(analytics)
     rank = 1
     print("Returned docs ", total)
-    print("sdhasd - ", rank)
+    # print("sdhasd - ", rank)
     for x in analytics:
         marks_cur = 0
         for y in x['marks']:
-            if y['course_id'] == course_id:
+            if y['name'] == course_id:
                 if y['c1_marks'] != "N/A":
                     marks_cur += float(y['c1_marks'])
                 if y['c2_marks'] != "N/A":
                     marks_cur += float(y['c2_marks'])
                 if y['c3_marks'] != "N/A":
                     marks_cur += float(y['c3_marks'])
+        print(x['username'], " ", marks_cur, " : ", user_marks)
         if marks_cur > user_marks:
-            print(marks_cur, " : ", user_marks)
             rank += 1
-    print("sdhasd ",rank)
+    print("rannk return  ",rank)
     return rank, total
 
 
@@ -62,24 +62,24 @@ def is_in_db(chat_id):
         return True
 
 
-def save_marks(user, marks):
-    user_db = MONGO.marks.find_one({'username': user.username, 'session': user.session})
+def save_marks(user, session, marks):
+    user_db = MONGO.marks.find_one({'username': user.username, 'session': session})
     if user_db is None:
         MONGO.marks.insert_one({
             'username': user.username,
-            'session': user.session,
+            'session': session,
             'marks': marks
         })
     else:
         MONGO.marks.remove(
             {
                 'username': user.username,
-                'session': user.session
+                'session': session
             }
         )
         MONGO.marks.insert_one({
             'username': user.username,
-            'session': user.session,
+            'session':  session,
             'marks': marks
         })
     return True
