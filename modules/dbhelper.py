@@ -1,6 +1,7 @@
 from ZeNo import MONGO
 from ZeNo.modules.data import User
 
+
 def save_user_db(user):
     try:
         MONGO.users.insert_one(
@@ -21,8 +22,10 @@ def save_user_db(user):
     except:
         print("error while saving user")
 
+
 def del_user(user):
-    MONGO.users.delete_many({"chat_id" : user.chat_id})
+    MONGO.users.delete_many({"chat_id": user.chat_id})
+
 
 def is_in_db(chat_id):
     user = MONGO.users.find_one({'chat_id': chat_id})
@@ -31,31 +34,34 @@ def is_in_db(chat_id):
     else:
         return True
 
-def save_marks(user, marks):
-    user_db = MONGO.marks.find_one({'username' : user.username, 'session' : user.session})
+
+def save_marks(user, session, marks):
+    user_db = MONGO.marks.find_one({'username': user.username, 'session': session})
     if user_db is None:
         MONGO.marks.insert_one({
-            'username' : user.username,
-            'session' : user.session,
-             'marks' : marks
+            'username': user.username,
+            'session': session,
+            'marks': marks
         })
     else:
         MONGO.marks.remove(
             {
-                'username' : user.username,
-                'session': user.session
+                'username': user.username,
+                'session': session
             }
         )
         MONGO.marks.insert_one({
-            'username' : user.username,
-            'session': user.session,
-             'marks' : marks
+            'username': user.username,
+            'session': session,
+            'marks': marks
         })
     return True
+
 
 def number_of_users():
     u = MONGO.users.count()
     return u
+
 
 def get_all_users():
     users = MONGO.users.find({})
@@ -63,6 +69,7 @@ def get_all_users():
     for i in users:
         output.append(str(i['chat_id']))
     return output
+
 
 def get_user_db(chat_id):
     try:
