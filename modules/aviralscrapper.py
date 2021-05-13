@@ -138,7 +138,7 @@ def get_marks(message, user, session):
             print(f"Your marks in {i['name']} is {i['c1_marks']}")
             if i['name'] not in user.enrolled_courses:
                 user.enrolled_courses.append(i['name'])
-        marks = Parser.marks_parser(god_draft, session, analytics=True)
+        marks = Parser.marks_parser(god_draft, user.username, session, analytics=True)
         cgpi = Parser.cgpi_parser(user_data, session, analytics=True)
         bot.send_message(message.chat.id, marks)
         if marks != "\nNo Results for this session..":

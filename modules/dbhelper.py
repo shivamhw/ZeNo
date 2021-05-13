@@ -23,15 +23,16 @@ def save_user_db(user):
         print("error while saving user")
 
 
-def get_analytics(session, course_id, user_marks):
+def get_analytics(session, username, course_id, user_marks):
     query = {"$and": [{"session": session}, {"marks": {"$elemMatch": {"name": course_id}}}]}
     analytics = list(MONGO.marks.find(query))
     total = len(analytics)
     rank = 1
-    print("Returned docs ", total)
-    # print("sdhasd - ", rank)
+    user_flg = True
     for x in analytics:
         marks_cur = 0
+        if x['username'] == username:
+            user_flg = False
         for y in x['marks']:
             if y['name'] == course_id:
                 if y['c1_marks'] != "N/A":
@@ -40,10 +41,10 @@ def get_analytics(session, course_id, user_marks):
                     marks_cur += float(y['c2_marks'])
                 if y['c3_marks'] != "N/A":
                     marks_cur += float(y['c3_marks'])
-        print(x['username'], " ", marks_cur, " : ", user_marks)
         if marks_cur > user_marks:
             rank += 1
-    print("rannk return  ",rank)
+    if user_flg:
+        total += 1
     return rank, total
 
 

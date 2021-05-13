@@ -21,7 +21,7 @@ class emojis:
 
 
 class Parser:
-    def marks_parser(raw_data, session, analytics=False):
+    def marks_parser(raw_data, username, session, analytics=False):
         output_string = 'Results: \n\n'
         for i in raw_data:
             marks_cur = 0
@@ -38,7 +38,7 @@ class Parser:
                     marks_cur += float(i['c2_marks'])
                 if i['c3_marks'] != "N/A":
                     marks_cur += float(i['c3_marks'])
-                rank, total = get_analytics(session, i['name'], marks_cur)
+                rank, total = get_analytics(session, username, i['name'], marks_cur)
                 output_string += "Rank: "
                 if rank == 1:
                     output_string += emojis.get_emoji("first_rank")
