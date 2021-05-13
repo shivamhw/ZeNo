@@ -23,6 +23,7 @@ def save_user_db(user):
         print("error while saving user")
 
 
+
 def get_analytics(session, username, course_id, user_marks):
     query = {"$and": [{"session": session}, {"marks": {"$elemMatch": {"name": course_id}}}]}
     analytics = list(MONGO.marks.find(query))
@@ -53,7 +54,6 @@ def del_user(user):
         MONGO.users.delete_many({"chat_id": user.chat_id})
     except:
         print("error deleting in del_user")
-
 
 def is_in_db(chat_id):
     user = MONGO.users.find_one({'chat_id': chat_id})
