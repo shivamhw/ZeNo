@@ -1,6 +1,8 @@
+import time
+
 import requests
 import json
-from modules.dbhelper import save_marks
+from modules.dbhelper import save_marks,set_flag
 from ZeNo import bot, users_dict
 import sys
 from modules.helper import Parser, is_reg
@@ -45,6 +47,35 @@ def callback_query(call):
     bot.answer_callback_query(call.id)
     if is_reg(call.message):
         get_session(call.message, users_dict[call.message.chat.id])
+    else:
+        bot.send_message(call.message.chat.id, "Please /start again")
+
+
+@bot.callback_query_handler(func=lambda call: call.data == "cancel")
+def callback_query(call):
+    bot.answer_callback_query(call.id)
+    if is_reg(call.message):
+        bot.delete_message(call.message.chat.id, call.message.id)
+        bot.send_message(call.message.chat.id, "Please click /hi again")
+    else:
+        bot.send_message(call.message.chat.id, "Please /start again")
+
+
+@bot.callback_query_handler(func=lambda call: call.data == "enable_analytics")
+def callback_query(call):
+    bot.answer_callback_query(call.id)
+    if is_reg(call.message):
+        enable_analytics(call.message, users_dict[call.message.chat.id])
+    else:
+        bot.send_message(call.message.chat.id, "Please /start again")
+
+
+@bot.callback_query_handler(func=lambda call: call.data.startswith("enable_analytics_"))
+def callback_query(call):
+    bot.answer_callback_query(call.id)
+    bot.delete_message(call.message.chat.id, call.message.id)
+    if is_reg(call.message):
+        analytics_manager(call.data, users_dict[call.message.chat.id])
     else:
         bot.send_message(call.message.chat.id, "Please /start again")
 
@@ -125,7 +156,7 @@ def get_special(message, user):
 
 def get_marks(message, user, session):
     bot.delete_message(message.chat.id, message.id)
-    wait_msg = bot.send_message(message.chat.id, "Getting marks for "+session+" Session....")
+    wait_msg = bot.send_message(message.chat.id, "Getting marks for " + session + " Session....")
     header_auth['session'] = session
     header_auth['Authorization'] = user.jwt_token
     header_auth['X-CSRFToken'] = user.cs_token
@@ -138,12 +169,13 @@ def get_marks(message, user, session):
             print(f"Your marks in {i['name']} is {i['c1_marks']}")
             if i['name'] not in user.enrolled_courses:
                 user.enrolled_courses.append(i['name'])
-        marks = Parser.marks_parser(god_draft, user.username, session, analytics=True)
-        cgpi = Parser.cgpi_parser(user_data, session, analytics=True)
+        marks = Parser.marks_parser(god_draft, user.username, session, analytics=user.flags['analytics_enabled'])
+        cgpi = Parser.cgpi_parser(user_data, session, analytics=user.flags['analytics_enabled'])
         bot.send_message(message.chat.id, marks)
         if marks != "\nNo Results for this session..":
             bot.send_message(message.chat.id, cgpi)
-            save_marks(user, session, god_draft)
+            if user.flags['analytics_enabled']:
+                save_marks(user, session, god_draft)
     except Exception as e:
         print(str(e))
         bot.send_message(message.chat.id, "something went wrong!!! please /start again")
@@ -151,3 +183,52 @@ def get_marks(message, user, session):
         user.del_user_db()
     bot.delete_message(wait_msg.chat.id, wait_msg.id)
     return god_draft
+
+
+def enable_analytics(message, user):
+
+    if user.flags['analytics_enabled']:
+        yes_msg = "You have analytics enabled.\n\n Analytics do not share anything and does not even have any open api " \
+                  "to access any records, as aviral dont provide any analytics so we have" \
+                  + "to maintain our own little DB to give you analytics. It is not shared and all the code is hosted " \
+                    "on " \
+                    "github so you can ensure that there is no API support for any privacy" \
+                  + " invading calls."
+        msg = bot.send_message(message.chat.id, yes_msg)
+        # time.sleep(10)
+        # bot.delete_message(message.chat.id, msg.id)
+        yes_msg = "But still if you dont want to contribute to rank analytics then it okay too. You can opt out from " \
+                  "here. You can still use ZeNo as before but without analytics. \n\n"
+        yes_msg += "Here are some things to keep in mind when opting out.\n" \
+                   + "1. You wont be able to see your ranks also.\n" \
+                   + "2. Your old data will take time to flush out from system but your new marks will not be stored " \
+                     "from immediate effect.\n" \
+                   + "3. As of now you can't opt in one you opt out.\n\n\n\n Please wait......"
+        msg1 = bot.send_message(message.chat.id, yes_msg)
+        time.sleep(10)
+        bot.delete_message(message.chat.id, msg.id)
+        bot.delete_message(message.chat.id, msg1.id)
+        markup = InlineKeyboardMarkup()
+        markup.row_width = 2
+        markup.add(InlineKeyboardButton("Disable Analytics for me", callback_data="enable_analytics_no"), InlineKeyboardButton("Cancel", callback_data="cancel"))
+        bot.send_message(message.chat.id, "Do you want to opt out?", reply_markup=markup)
+    else:
+        markup = InlineKeyboardMarkup()
+        markup.row_width = 2
+        markup.add(InlineKeyboardButton("Enable Analytics for me", callback_data="enable_analytics_yes"), InlineKeyboardButton("Cancel", callback_data="cancel"))
+        bot.send_message(message.chat.id, "Do you want to opt in?", reply_markup=markup)
+
+
+def analytics_manager(data, user):
+    if data == "enable_analytics_no":
+        user.flags['analytics_enabled'] = False
+        set_flag(user.username, "analytics_enabled", False)
+        msg = bot.send_message(user.chat_id, "okay, Your new marks will not be used for analytics from now.")
+        time.sleep(5)
+        bot.delete_message(user.chat_id, msg.id)
+    if data == "enable_analytics_yes":
+        user.flags['analytics_enabled'] = True
+        set_flag(user.username, "analytics_enabled", True)
+        msg = bot.send_message(user.chat_id, "okay, but opting in and out multiple time will block the feature for you.")
+        time.sleep(5)
+        bot.delete_message(user.chat_id, msg.id)

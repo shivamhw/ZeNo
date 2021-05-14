@@ -40,6 +40,8 @@ class User:
         self.session = None
         self.jwt_token = None
         self.cs_token = None
+        self.flags = None
+        self.role = None
         self.request_no = 0
         self.semester = None
         self.section = None

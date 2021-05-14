@@ -50,9 +50,10 @@ def front_page(user, message):
     bot.send_message(message.chat.id, "Hiii " + user.name + " ... ")
     markup = InlineKeyboardMarkup()
     markup.row_width = 1
-    # markup.add(InlineKeyboardButton("MTECH Specialization Results !", callback_data="aviral_spl"))
+    #
     markup.add(InlineKeyboardButton("Aviral marks "+emojis.get_emoji("bar_chart"),
                                     callback_data="aviral"))  # InlineKeyboardButton("New announcements", callback_data="announcement")
+    markup.add(InlineKeyboardButton("OPT IN/OUT for Marks Analytics", callback_data="enable_analytics"))
     markup.add(InlineKeyboardButton("Online Class links", callback_data="classlinks"))
     markup.add(InlineKeyboardButton("Logout",
                                     callback_data="logout"))  # InlineKeyboardButton("Create Poll", callback_data="create_poll"),

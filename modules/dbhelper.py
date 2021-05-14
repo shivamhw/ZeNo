@@ -16,12 +16,13 @@ def save_user_db(user):
                 'program': user.program,
                 'jwt_token': user.jwt_token,
                 'cs_token': user.cs_token,
-                'session': user.session
+                'session': user.session,
+                'role': "student",
+                'flags': {"analytics_enabled": True}
             }
         )
     except:
         print("error while saving user")
-
 
 
 def get_analytics(session, username, course_id, user_marks):
@@ -55,6 +56,7 @@ def del_user(user):
     except:
         print("error deleting in del_user")
 
+
 def is_in_db(chat_id):
     user = MONGO.users.find_one({'chat_id': chat_id})
     if user is None:
@@ -80,7 +82,7 @@ def save_marks(user, session, marks):
         )
         MONGO.marks.insert_one({
             'username': user.username,
-            'session':  session,
+            'session': session,
             'marks': marks
         })
     return True
@@ -114,6 +116,15 @@ def get_user_db(chat_id):
         user.program = u['program']
         user.jwt_token = u['jwt_token']
         user.cs_token = u['cs_token']
+        user.role = u['role']
+        user.flags = u['flags']
     except:
         print("error getting user from db")
     return user
+
+
+def set_flag(username, flag, value):
+    try:
+        MONGO.users.update_one({"username": username}, {"$set": {"flags." + flag: value}})
+    except:
+        print("cant set flag")
