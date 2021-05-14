@@ -17,6 +17,7 @@ aviral_marks_api = "https://aviral.iiita.ac.in/api/student/enrolled_courses/"
 aviral_details_api = "https://aviral.iiita.ac.in/api/student/dashboard/"
 aviral_sessions_api = "https://aviral.iiita.ac.in/api/sessions/"
 aviral_specialize_api = "https://aviral.iiita.ac.in/api/student/mtechspls/status/"
+aviral_semester_result_api = "https://aviral.iiita.ac.in/api/student/semester_results/"
 
 # Global Variables
 header_auth = {
@@ -164,15 +165,19 @@ def get_marks(message, user, session):
     try:
         user_marks = requests.get(aviral_marks_api, headers=header_auth)
         user_data = requests.get(aviral_details_api, headers=header_auth).json()
+        user_sem_data = requests.get(aviral_semester_result_api, headers=header_auth).json()
+        print(user_sem_data)
         god_draft = json.loads(user_marks.text)
-        for i in god_draft:
-            print(f"Your marks in {i['name']} is {i['c1_marks']}")
-            if i['name'] not in user.enrolled_courses:
-                user.enrolled_courses.append(i['name'])
+        # for i in god_draft:
+        #     print(f"Your marks in {i['name']} is {i['c1_marks']}")
+        #     if i['name'] not in user.enrolled_courses:
+        #         user.enrolled_courses.append(i['name'])
         marks = Parser.marks_parser(god_draft, user.username, session, analytics=user.flags['analytics_enabled'])
         cgpi = Parser.cgpi_parser(user_data, session, analytics=user.flags['analytics_enabled'])
+        sgpi = Parser.sgpi_parser(user_sem_data, session, analytics=user.flags['analytics_enabled'])
         bot.send_message(message.chat.id, marks)
         if marks != "\nNo Results for this session..":
+            bot.send_message(message.chat.id, sgpi)
             bot.send_message(message.chat.id, cgpi)
             if user.flags['analytics_enabled']:
                 save_marks(user, session, god_draft)

@@ -63,10 +63,20 @@ class Parser:
 
     def cgpi_parser(user_data, session, analytics=False):
         output_string = "Final Results: \n"
-        output_string += "Semester : " + user_data['semester']
+        # output_string += "Semester : " + user_data['semester']
         output_string += "\nCGPI : " + str(user_data['cgpi'])
         output_string += "\nCompleted/Total Credits : " + str(user_data['completed_total']) + "/" + str(
             user_data['total_credits'])
+        return output_string
+
+    def sgpi_parser(user_data, session, analytics=False):
+        output_string = "Semester Results: \n"
+        try:
+            for i in user_data['data']:
+                output_string += "\nSemester : " + str(i['semester'])
+                output_string += "\nsgpi : " + str(i['sgpi'])
+        except:
+            output_string = "error parsing semester results."
         return output_string
 
     def percentile(marks_analytics):
