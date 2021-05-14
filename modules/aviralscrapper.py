@@ -174,7 +174,11 @@ def get_marks(message, user, session):
         #         user.enrolled_courses.append(i['name'])
         marks = Parser.marks_parser(god_draft, user.username, session, analytics=user.flags['analytics_enabled'])
         cgpi = Parser.cgpi_parser(user_data, session, analytics=user.flags['analytics_enabled'])
-        sgpi = Parser.sgpi_parser(user_sem_data, session, analytics=user.flags['analytics_enabled'])
+        try:
+            sgpi = Parser.sgpi_parser(user_sem_data, session, analytics=user.flags['analytics_enabled'])
+        except:
+            sgpi ="error parsing sgpi"
+            print("issue in getting sgpi api")
         bot.send_message(message.chat.id, marks)
         if marks != "\nNo Results for this session..":
             bot.send_message(message.chat.id, sgpi)
