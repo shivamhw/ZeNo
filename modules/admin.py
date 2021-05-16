@@ -9,7 +9,7 @@ broadcast_msg = "testB"
 
 
 # modules handler
-@bot.callback_query_handler(func=lambda call: call.data == "broadcast_yes")
+# @bot.callback_query_handler(func=lambda call: call.data == "broadcast_yes")
 def broadcast_handler(call):
     bot.answer_callback_query(call.id)
     broadcast()
@@ -29,11 +29,11 @@ def handler_callback(call):
 
 
 def handle(message, key):
-    if key == 'broadcast':
-        bot.send_message(message.chat.id, " Please type your message.")
-        bot.register_next_step_handler(message, get_msg)
-    if key == "change_classlinks":
-        classlinks.set_classlinks(message)
+    # if key == 'broadcast':
+    #     bot.send_message(message.chat.id, " Please type your message.")
+    #     bot.register_next_step_handler(message, get_msg)
+    # if key == "change_classlinks":
+    #     classlinks.set_classlinks(message)
     if key == "user_stats":
         bot.send_message(message.chat.id, "Number of reg. users : "+str(number_of_users()))
         # bot.send_message(message.chat.id, "Number of reg. users : " + str(get_all_users()))
@@ -52,10 +52,10 @@ def get_msg(message):
                InlineKeyboardButton("Cancel", callback_data="no_a"))
     bot.send_message(message.chat.id, "Please select", reply_markup=markup)
 
-
-def broadcast():
-    for i in get_all_users():
-        bot.send_message(i, broadcast_msg)
+#
+# def broadcast():
+#     for i in get_all_users():
+#         bot.send_message(i, broadcast_msg)
 
 
 def admin_panel(message):
