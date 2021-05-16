@@ -94,7 +94,7 @@ class Parser:
                 parsed_joke += "\n\n"
                 parsed_joke += "*"+joke['delivery']+"*"
             if joke["type"] == "single":
-                parsed_joke = joke['joke']
+                parsed_joke = "*"+joke['joke']+"*"
             return parsed_joke
         except:
             return ""
