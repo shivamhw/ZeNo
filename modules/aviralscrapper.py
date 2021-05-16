@@ -108,7 +108,6 @@ def login(username, password, chat_id):
             user.save_userdata(get_userdata(user))
         except:
             print("error getting userdata")
-        print("resturn user")
         return user
     except:
         print(sys.exc_info())
