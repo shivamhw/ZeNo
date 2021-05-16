@@ -2,7 +2,7 @@ import time
 
 import requests
 import json
-from modules.dbhelper import save_marks,set_flag
+from modules.dbhelper import save_marks, set_flag
 from ZeNo import bot, users_dict
 import sys
 from modules.helper import Parser, is_reg
@@ -18,6 +18,7 @@ aviral_details_api = "https://aviral.iiita.ac.in/api/student/dashboard/"
 aviral_sessions_api = "https://aviral.iiita.ac.in/api/sessions/"
 aviral_specialize_api = "https://aviral.iiita.ac.in/api/student/mtechspls/status/"
 aviral_semester_result_api = "https://aviral.iiita.ac.in/api/student/semester_results/"
+wait_msg_api = "https://v2.jokeapi.dev/joke/Programming?blacklistFlags=nsfw"
 
 # Global Variables
 header_auth = {
@@ -31,6 +32,7 @@ header_auth = {
     "X-CSRFToken": '',
     "Referer": "https://aviral.iiita.ac.in/student/courses/"
 }
+WAITMSG_TO = 6
 
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith("getmarks_"))
@@ -130,7 +132,6 @@ def get_session(message, user):
     header_auth['session'] = user.session
     try:
         sessions = requests.get(url=aviral_sessions_api, headers=header_auth).json()
-        print(sessions)
         markup = InlineKeyboardMarkup()
         markup.row_width = 2
         for i in sessions:
@@ -156,27 +157,34 @@ def get_special(message, user):
 
 def get_marks(message, user, session):
     bot.delete_message(message.chat.id, message.id)
-    wait_msg = bot.send_message(message.chat.id, "Getting marks for " + session + " Session....")
+    try:
+        joke = requests.get(wait_msg_api, timeout=2)
+    except:
+        joke = ""
+    joke = Parser.joke_parser(joke.json())
+    wait_msg_cont = "Getting marks for " + session + " Session...." + "\n\n" + joke
+    wait_msg = bot.send_message(message.chat.id, wait_msg_cont, parse_mode="MarkDown")
     header_auth['session'] = session
     header_auth['Authorization'] = user.jwt_token
     header_auth['X-CSRFToken'] = user.cs_token
     god_draft = None
     try:
         user_marks = requests.get(aviral_marks_api, headers=header_auth)
-        user_data = requests.get(aviral_details_api, headers=header_auth).json()
-        user_sem_data = requests.get(aviral_semester_result_api, headers=header_auth).json()
-        print(user_sem_data)
+        user_data = requests.get(aviral_details_api, headers=header_auth)
+        user_sem_data = requests.get(aviral_semester_result_api, headers=header_auth)
         god_draft = json.loads(user_marks.text)
-        # for i in god_draft:
-        #     print(f"Your marks in {i['name']} is {i['c1_marks']}")
-        #     if i['name'] not in user.enrolled_courses:
-        #         user.enrolled_courses.append(i['name'])
-        marks = Parser.marks_parser(god_draft, user.username, session, analytics=user.flags['analytics_enabled'])
-        cgpi = Parser.cgpi_parser(user_data, session, analytics=user.flags['analytics_enabled'])
         try:
-            sgpi = Parser.sgpi_parser(user_sem_data, session, analytics=user.flags['analytics_enabled'])
+            time_taken_by_api = user_data.elapsed.total_seconds() + user_marks.elapsed.total_seconds() + user_sem_data.elapsed.total_seconds()
+            if time_taken_by_api < WAITMSG_TO:
+                time.sleep(WAITMSG_TO - time_taken_by_api)
         except:
-            sgpi ="error parsing sgpi"
+            print("error while waiting for joke")
+        marks = Parser.marks_parser(god_draft, user.username, session, analytics=user.flags['analytics_enabled'])
+        cgpi = Parser.cgpi_parser(user_data.json(), session, analytics=user.flags['analytics_enabled'])
+        try:
+            sgpi = Parser.sgpi_parser(user_sem_data.json(), session, analytics=user.flags['analytics_enabled'])
+        except:
+            sgpi = "error parsing sgpi"
             print("issue in getting sgpi api")
         bot.send_message(message.chat.id, marks)
         if marks != "\nNo Results for this session..":
@@ -194,7 +202,6 @@ def get_marks(message, user, session):
 
 
 def enable_analytics(message, user):
-
     if user.flags['analytics_enabled']:
         yes_msg = "You have analytics enabled.\n\n Analytics do not share anything and does not even have any open api " \
                   "to access any records, as aviral dont provide any analytics so we have" \
@@ -218,12 +225,14 @@ def enable_analytics(message, user):
         bot.delete_message(message.chat.id, msg1.id)
         markup = InlineKeyboardMarkup()
         markup.row_width = 2
-        markup.add(InlineKeyboardButton("Disable Analytics for me", callback_data="enable_analytics_no"), InlineKeyboardButton("Cancel", callback_data="cancel"))
+        markup.add(InlineKeyboardButton("Disable Analytics for me", callback_data="enable_analytics_no"),
+                   InlineKeyboardButton("Cancel", callback_data="cancel"))
         bot.send_message(message.chat.id, "Do you want to opt out?", reply_markup=markup)
     else:
         markup = InlineKeyboardMarkup()
         markup.row_width = 2
-        markup.add(InlineKeyboardButton("Enable Analytics for me", callback_data="enable_analytics_yes"), InlineKeyboardButton("Cancel", callback_data="cancel"))
+        markup.add(InlineKeyboardButton("Enable Analytics for me", callback_data="enable_analytics_yes"),
+                   InlineKeyboardButton("Cancel", callback_data="cancel"))
         bot.send_message(message.chat.id, "Do you want to opt in?", reply_markup=markup)
 
 
@@ -237,6 +246,7 @@ def analytics_manager(data, user):
     if data == "enable_analytics_yes":
         user.flags['analytics_enabled'] = True
         set_flag(user.username, "analytics_enabled", True)
-        msg = bot.send_message(user.chat_id, "okay, but opting in and out multiple time will block the feature for you.")
+        msg = bot.send_message(user.chat_id,
+                               "okay, but opting in and out multiple time will block the feature for you.")
         time.sleep(5)
         bot.delete_message(user.chat_id, msg.id)

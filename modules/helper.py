@@ -84,6 +84,21 @@ class Parser:
         percentile = (marks_analytics[0] + marks_analytics[2] + 1) / total_students * 100
         return percentile
 
+    def joke_parser(joke):
+        parsed_joke = ""
+        try:
+            if joke['error']:
+                return ""
+            if joke["type"] == "twopart":
+                parsed_joke = joke['setup']
+                parsed_joke += "\n\n"
+                parsed_joke += "*"+joke['delivery']+"*"
+            if joke["type"] == "single":
+                parsed_joke = joke['joke']
+            return parsed_joke
+        except:
+            return ""
+
 
 class Pages:
     faq = ("1. Why use Zeno?"
