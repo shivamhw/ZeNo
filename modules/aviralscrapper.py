@@ -135,7 +135,8 @@ def get_session(message, user):
         markup = InlineKeyboardMarkup()
         markup.row_width = 2
         for i in sessions:
-            markup.add(InlineKeyboardButton(i['name'], callback_data="getmarks_" + i['session_id']))
+            if i["current"]:
+                markup.add(InlineKeyboardButton(i['name'], callback_data="getmarks_" + i['session_id']))
         bot.send_message(user.chat_id, "Which Session??", reply_markup=markup)
     except Exception as e:
         print("error getting session")
