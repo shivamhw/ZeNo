@@ -63,7 +63,6 @@ class Parser:
 
     def cgpi_parser(user_data, session, analytics=False):
         output_string = "Final Results: \n"
-        # output_string += "Semester : " + user_data['semester']
         output_string += "\nCGPI : " + str(user_data['cgpi'])
         output_string += "\nCompleted/Total Credits : " + str(user_data['completed_total']) + "/" + str(
             user_data['total_credits'])

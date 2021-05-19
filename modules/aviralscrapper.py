@@ -173,16 +173,18 @@ def get_marks(message, user, session):
         user_data = requests.get(aviral_details_api, headers=header_auth)
         user_sem_data = requests.get(aviral_semester_result_api, headers=header_auth)
         god_draft = json.loads(user_marks.text)
+        marks = "\nNo Results for this session.."
         try:
             time_taken_by_api = user_data.elapsed.total_seconds() + user_marks.elapsed.total_seconds() + user_sem_data.elapsed.total_seconds()
             if time_taken_by_api < WAITMSG_TO:
                 time.sleep(WAITMSG_TO - time_taken_by_api)
         except:
             print("error while waiting for joke")
-        marks = Parser.marks_parser(god_draft, user.username, session, analytics=user.flags['analytics_enabled'])
-        cgpi = Parser.cgpi_parser(user_data.json(), session, analytics=user.flags['analytics_enabled'])
         try:
             sgpi = Parser.sgpi_parser(user_sem_data.json(), session, analytics=user.flags['analytics_enabled'])
+            marks = Parser.marks_parser(god_draft, user.username, session, analytics=user.flags['analytics_enabled'])
+            cgpi = Parser.cgpi_parser(user_data.json(), session, analytics=user.flags['analytics_enabled'])
+
         except:
             sgpi = "error parsing sgpi"
             print("issue in getting sgpi api")
