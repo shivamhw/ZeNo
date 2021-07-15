@@ -35,6 +35,14 @@ header_auth = {
 WAITMSG_TO = 6
 
 
+@bot.message_handler(commands=['check_marks'])
+def marks_call_handler(message):
+    if is_reg(message):
+        get_session(message, users_dict[message.chat.id])
+    else:
+        bot.send_message(message.chat.id, "Please /start again")
+
+
 @bot.callback_query_handler(func=lambda call: call.data.startswith("getmarks_"))
 def callback_query(call):
     bot.answer_callback_query(call.id)
