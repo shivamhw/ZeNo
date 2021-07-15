@@ -189,10 +189,10 @@ def get_marks(message, user, session):
         except:
             sgpi = "error parsing sgpi"
             print("issue in getting sgpi api")
-        bot.send_message(message.chat.id, marks)
+        bot.send_message(message.chat.id, marks,  parse_mode="MarkDown")
         if marks != "\nNo Results for this session..":
-            bot.send_message(message.chat.id, sgpi)
-            bot.send_message(message.chat.id, cgpi)
+            bot.send_message(message.chat.id, sgpi,  parse_mode="MarkDown")
+            bot.send_message(message.chat.id, cgpi,  parse_mode="MarkDown")
             if user.flags['analytics_enabled']:
                 save_marks(user, session, god_draft)
     except Exception as e:

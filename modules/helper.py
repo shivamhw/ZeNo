@@ -22,15 +22,15 @@ class emojis:
 
 class Parser:
     def marks_parser(raw_data, username, session, analytics=False):
-        output_string = 'Results: \n\n'
+        output_string = '*Results*: \n\n'
         for i in raw_data:
             marks_cur = 0
             output_string += str(i['name']) + " : \n" \
-                             + i['c1_marks'] + ' | ' \
-                             + i['c2_marks'] + ' | ' \
-                             + i['c3_marks'] + ' = ' \
-                             + i['total'] + '\n' \
-                             + "GPA = " + i['gpa'] + '\n'
+                             + "*"+i['c1_marks']+ "*" + ' - ' \
+                             + "*"+ i['c2_marks'] + "*"+ ' - ' \
+                             + "*"+ i['c3_marks']+ "*" + ' = ' \
+                             + "*"+ i['total']+ "*" + '\n' \
+                             + "GPA = " + "*"+ i['gpa']+ "*" + '\n'
             if analytics:
                 if i['c1_marks'] != "N/A":
                     marks_cur += float(i['c1_marks'])
@@ -48,7 +48,7 @@ class Parser:
                     output_string += emojis.get_emoji("third_rank")
                 if rank > 3:
                     output_string += emojis.get_emoji("other_rank")
-                output_string += str(rank) + "/" + str(total)
+                output_string += " "+ "*"+str(rank)+ "*" + " out of " + "*"+ str(total)+ "*"
             output_string += '\n\n'
         if output_string == 'Results: \n\n':
             output_string = "\nNo Results for this session.."
@@ -62,18 +62,18 @@ class Parser:
         return output_string
 
     def cgpi_parser(user_data, session, analytics=False):
-        output_string = "Final Results: \n"
-        output_string += "\nCGPI : " + str(user_data['cgpi'])
-        output_string += "\nCompleted/Total Credits : " + str(user_data['completed_total']) + "/" + str(
-            user_data['total_credits'])
+        output_string = "*Final Results*: \n"
+        output_string += "\nCGPI : " + "*"+ str(user_data['cgpi'])+ "*"
+        output_string += "\nCompleted/Total Credits : "+ "*" + str(user_data['completed_total']) + "/" + str(
+            user_data['total_credits'])+ "*"
         return output_string
 
     def sgpi_parser(user_data, session, analytics=False):
-        output_string = "Semester Results: \n"
+        output_string = "*Semester Results*: \n"
         try:
             for i in user_data['data']:
-                output_string += "\nSemester : " + str(i['semester'])
-                output_string += "\nsgpi : " + str(i['sgpi'])
+                output_string += "\nSemester : " + "*"+ str(i['semester'])+ "*"
+                output_string += "\nSGPI : " + "*"+ str(i['sgpi'])+ "*"+"\n"
         except:
             output_string = "error parsing semester results."
         return output_string
