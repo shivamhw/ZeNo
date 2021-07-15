@@ -50,7 +50,7 @@ class Parser:
                     output_string += emojis.get_emoji("other_rank")
                 output_string += " "+ "*"+str(rank)+ "*" + " out of " + "*"+ str(total)+ "*"
             output_string += '\n\n'
-        if output_string == 'Results: \n\n':
+        if output_string == '*Results*: \n\n':
             output_string = "\nNo Results for this session.."
 
         return output_string
