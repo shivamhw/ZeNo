@@ -16,15 +16,45 @@ def save_user_db(user):
                 'program': user.program,
                 'jwt_token': user.jwt_token,
                 'cs_token': user.cs_token,
-                'session': user.session
+                'session': user.session,
+                'role': "student",
+                'flags': {"analytics_enabled": True}
             }
         )
     except:
         print("error while saving user")
 
 
+def get_analytics(session, username, course_id, user_marks):
+    query = {"$and": [{"session": session}, {"marks": {"$elemMatch": {"name": course_id}}}]}
+    analytics = list(MONGO.marks.find(query))
+    total = len(analytics)
+    rank = 1
+    user_flg = True
+    for x in analytics:
+        marks_cur = 0
+        if x['username'] == username:
+            user_flg = False
+        for y in x['marks']:
+            if y['name'] == course_id:
+                if y['c1_marks'] != "N/A":
+                    marks_cur += float(y['c1_marks'])
+                if y['c2_marks'] != "N/A":
+                    marks_cur += float(y['c2_marks'])
+                if y['c3_marks'] != "N/A":
+                    marks_cur += float(y['c3_marks'])
+        if marks_cur > user_marks:
+            rank += 1
+    if user_flg:
+        total += 1
+    return rank, total
+
+
 def del_user(user):
-    MONGO.users.delete_many({"chat_id": user.chat_id})
+    try:
+        MONGO.users.delete_many({"chat_id": user.chat_id})
+    except:
+        print("error deleting in del_user")
 
 
 def is_in_db(chat_id):
@@ -86,6 +116,15 @@ def get_user_db(chat_id):
         user.program = u['program']
         user.jwt_token = u['jwt_token']
         user.cs_token = u['cs_token']
+        user.role = u['role']
+        user.flags = u['flags']
     except:
         print("error getting user from db")
     return user
+
+
+def set_flag(username, flag, value):
+    try:
+        MONGO.users.update_one({"username": username}, {"$set": {"flags." + flag: value}})
+    except:
+        print("cant set flag")

@@ -40,6 +40,8 @@ class User:
         self.session = None
         self.jwt_token = None
         self.cs_token = None
+        self.flags = {"analytics_enabled": True}
+        self.role = "student"
         self.request_no = 0
         self.semester = None
         self.section = None
