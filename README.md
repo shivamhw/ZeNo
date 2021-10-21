@@ -1,6 +1,7 @@
 # Introduction
 Zeno is a bot for IIITA Students to check marks on aviral and see their ranks. There are multiple modules like voting, noticeboards and broadcasting messages to users, which can be enabled to get most out of Zeno.
 
+IMP ::: Really need help in testing the parser with results of multiple courses. If you are from any batch other then M.Tech 2020, Please do msg me on telegram @shivamhw or mail me. Any help would be appreciated.
 
 ## How to deploy
 
