@@ -26,7 +26,7 @@ def message_handler(message):
         bot.send_message(message.chat.id, "you are registered with us!")
         front_page(users_dict[message.chat.id], message)
     else:
-        bot.send_message(message.chat.id1, "ohhh! you are not logged in!", reply_markup=gen_markup_login())
+        bot.send_message(message.chat.id, "ohhh! you are not logged in!", reply_markup=gen_markup_login())
 
 @bot.message_handler(commands=['hi'])
 def message_handler(message):
