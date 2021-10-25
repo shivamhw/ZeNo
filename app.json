@@ -1,0 +1,20 @@
+{
+    "name": "Paperplane userbot project",
+    "description": "A modular Telegram userbot running on Python3, which can be coupled up with Mongo DB and a Redis backend.",
+    "keywords": [
+      "telegram"
+    ],
+    "repository": "https://github.com/shivamhw/ZeNo/tree/zeno-docker",
+    "stack": "container",
+    "env": {
+        "TELE": {
+            "description": "TELE.",
+            "required": true
+        },
+        "MongoURI": {
+            "description": "DB.",
+            "required": true
+        }
+        }
+    }
+}
