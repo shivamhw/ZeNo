@@ -1,7 +1,7 @@
 from ZeNo import bot, users_dict, poll_dict
-from modules.login import front_page
+from ZeNo.modules.login import front_page
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
-from modules.helper import is_reg
+from ZeNo.modules.helper import is_reg
 import time
 import os
 import subprocess

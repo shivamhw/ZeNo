@@ -1,8 +1,8 @@
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 from ZeNo import users_dict, bot
-from modules.helper import is_reg
-from modules import aviralscrapper as avi
-from modules.helper import emojis
+from ZeNo.modules.helper import is_reg
+from ZeNo.modules import aviralscrapper as avi
+from ZeNo.modules.helper import emojis
 
 @bot.callback_query_handler(func=lambda call: call.data == "main_login")
 def login_callback(call):

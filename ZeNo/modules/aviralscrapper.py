@@ -1,14 +1,12 @@
 import time
-
 import requests
 import json
-from modules.dbhelper import save_marks, set_flag
+from ZeNo.modules.dbhelper import save_marks, set_flag
 from ZeNo import bot, users_dict
 import sys
-from modules.helper import Parser, is_reg
+from ZeNo.modules.helper import Parser, is_reg
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
-
-from modules.data import User
+from ZeNo.modules.data import User
 
 # API for requests
 aviral_login_url = "https://aviral.iiita.ac.in/login"

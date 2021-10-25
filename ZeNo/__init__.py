@@ -2,7 +2,7 @@ import os
 import telebot
 from pymongo import MongoClient
 from importlib import import_module
-from modules import ALL_MODULES
+from ZeNo.modules import ALL_MODULES
 
 users_dict = {}
 poll_dict = {}

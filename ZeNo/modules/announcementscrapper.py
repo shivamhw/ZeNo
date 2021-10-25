@@ -1,8 +1,7 @@
 from typing import Any
 from ZeNo import bot, users_dict
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
-
-from modules import data
+from ZeNo.modules import data
 from bs4 import BeautifulSoup
 import requests
 from urllib.parse import urlparse

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List
-from modules import announcementscrapper
-from modules import dbhelper
+from ZeNo.modules import announcementscrapper
+from ZeNo.modules import dbhelper
 
 @dataclass
 class CurrentAnnouncement:

@@ -1,7 +1,6 @@
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 from ZeNo import bot, users_dict
-from modules import classlinks
-from modules.dbhelper import number_of_users, get_all_users
+from ZeNo.modules.dbhelper import number_of_users, get_all_users
 amodules = {"broadcast": "Broadcast",
             "change_classlinks": "Change Class Links",
             "user_stats" : "Users REG"}

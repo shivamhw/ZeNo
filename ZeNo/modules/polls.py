@@ -1,6 +1,6 @@
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 from ZeNo import bot, poll_dict, users_dict
-from modules.data import PollData
+from ZeNo.modules.data import PollData
 
 
 # @bot.callback_query_handler(func=lambda call: call.data == "create_poll")

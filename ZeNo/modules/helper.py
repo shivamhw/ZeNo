@@ -1,5 +1,5 @@
 from ZeNo import bot, users_dict
-from modules.dbhelper import is_in_db, get_user_db, get_analytics
+from ZeNo.modules.dbhelper import is_in_db, get_user_db, get_analytics
 
 
 class emojis:
