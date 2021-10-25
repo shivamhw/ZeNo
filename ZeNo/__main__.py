@@ -48,5 +48,3 @@ try:
     bot.polling(none_stop=True)
 except Exception as e:
     print(str(e))
-    cur = os.getcwd()+'/ZeNo'
-    subprocess.call(['bash', cur+'/reset.sh', cur])
