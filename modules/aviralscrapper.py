@@ -166,12 +166,7 @@ def get_special(message, user):
 
 def get_marks(message, user, session):
     bot.delete_message(message.chat.id, message.id)
-    try:
-        joke = requests.get(wait_msg_api, timeout=2)
-    except:
-        joke = ""
-    joke = Parser.joke_parser(joke.json())
-    wait_msg_cont = "Getting marks for " + session + " Session...." + "\n\n" + joke
+    wait_msg_cont = "Getting marks for " + session + " Session...." + "\n\n" 
     wait_msg = bot.send_message(message.chat.id, wait_msg_cont, parse_mode="MarkDown")
     header_auth['session'] = session
     header_auth['Authorization'] = user.jwt_token
@@ -183,12 +178,6 @@ def get_marks(message, user, session):
         user_sem_data = requests.get(aviral_semester_result_api, headers=header_auth)
         god_draft = json.loads(user_marks.text)
         marks = "\nNo Results for this session.."
-        try:
-            time_taken_by_api = user_data.elapsed.total_seconds() + user_marks.elapsed.total_seconds() + user_sem_data.elapsed.total_seconds()
-            if time_taken_by_api < WAITMSG_TO:
-                time.sleep(WAITMSG_TO - time_taken_by_api)
-        except:
-            print("error while waiting for joke")
         try:
             sgpi = Parser.sgpi_parser(user_sem_data.json(), session, analytics=user.flags['analytics_enabled'])
             marks = Parser.marks_parser(god_draft, user.username, session, analytics=user.flags['analytics_enabled'])
